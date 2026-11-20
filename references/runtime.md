@@ -41,7 +41,7 @@ Pick the first path that fits:
 
 1. **T3 Code `delegate_task`.** Use it for another provider's model, any option the parent does not have, a separate checkout (`isolation: "worktree"`), and every background helper. Pass `target: {providerInstanceId, model, options}` from the role value, `role` (`implementation`, `research`, `review`, `design`, `test`, `general`), `mode: "async"`, and a short `title`. Keep the returned `taskId`.
 2. **The client's own subagent tool** (Claude Code `Agent`, Codex `spawn_agent`, Antigravity `invoke_subagent`). Use it when the helper runs on the parent's own provider and model with no extra options, and for read-only helpers when the client can enforce read-only (see below).
-   - Claude Code without `delegate_task` (outside T3 Code): a `claudeAgent/<model>` value runs as `Agent` with `model` set to the model's short name (`opus`, `sonnet`, `haiku`, `fable`). Its effort options cannot be set there; the helper runs at the session's effort. A `codex/...` value runs as `Agent` with `subagent_type: "codex:codex-rescue"` when that plugin is installed, on the model set in `~/.codex/config.toml`. An `antigravity/...` value is unavailable there. Say so.
+   - Claude Code without `delegate_task` (outside T3 Code): a `claudeAgent/<model>` value runs as `Agent` with `model` set to the model's short name (`opus`, `sonnet`, `haiku`, `fable`). Pass the value's effort option as the `Agent` tool's `effort`. A `codex/...` value runs as `Agent` with `subagent_type: "codex:codex-rescue"` when that plugin is installed, on the model set in `~/.codex/config.toml`. An `antigravity/...` value is unavailable there. Say so.
 3. **No spawn tool.** Do the step yourself in sequence and say the step ran without an independent helper.
 
 ### Waiting
@@ -53,7 +53,8 @@ Pick the first path that fits:
 
 ### Read-only helpers and reviewers
 
-- An enforced read-only helper is one the client sandboxes: Claude Code agents restricted to read tools, Antigravity `invoke_subagent` with `TypeName: "research"` or `define_subagent` with write tools off, a Codex read-only sandbox.
+- An enforced read-only helper is one the client sandboxes: Antigravity `invoke_subagent` with `TypeName: "research"` or `define_subagent` with write tools off, a Codex read-only sandbox.
+- Claude Code has no enforced read-only helper. `Explore` and `Plan` have no edit or write tools but keep the shell. Use them for read-only questions. For a reviewer, use `Agent` with `isolation: "worktree"` and run the checks below on its worktree.
 - `delegate_task` has no read-only mode. For a reviewer on another provider, spawn it with `isolation: "worktree"`. The worktree is a checkout of the T3 project the thread belongs to. For a repo outside that project, `delegate_task` cannot isolate the reviewer. Say so and ask the user.
 - Before the spawn, record the real checkout's `git rev-parse HEAD`, `git branch --show-current`, and `git status --porcelain`. Tell the reviewer to work only in its own worktree and to leave untracked repro files there, never commits or edits to tracked files.
 - When it returns, find its worktree with `t3_worktree_list` for the child's thread. Run `git -C <its worktree> status --porcelain --untracked-files=no` and `git -C <its worktree> log <base>..HEAD`. Both must be empty. Then rerun the three reads on the real checkout. They must match what you recorded. If anything differs, discard the review, report the breach, and restore or remove what it changed.
