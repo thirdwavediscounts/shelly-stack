@@ -1,27 +1,73 @@
-# Claude Code runtime
+# Runtime contract
 
-Use the active tool catalog and repository instructions. This package provides workflows, not browser binaries, credentials, or service integrations.
+shelly-stack runs on any model in any client that can read files and run a shell. This file maps each thing a skill asks for to the tool that does it. Skills name the action ("load the `how` skill", "spawn a delegate on the `bug-fix` role"). This file says how. When a client offers a tool named here, use it. When it does not, use the fallback. When neither works, say which step could not run and why. Never pretend a step ran.
 
-## Skills and tools
+## Words used in every skill
 
-Invoke companion skills as `/shelly-stack:<name>`. Resolve files relative to the installed skill path, never from a guessed checkout or cache directory. Reuse the project's verification skill and available browser or terminal tools. Read the selected tool's skill before driving it. If no suitable tool is available, report the exact unverified step.
+- `<SHELLY_ROOT>` is the folder that holds `skills/`, `references/`, and `README.md` for this package. Find it from the path of any shelly-stack `SKILL.md` you loaded: it is two folders up. Put the absolute path in every brief you write. Never use `${CLAUDE_PLUGIN_ROOT}` or a guessed cache path.
+- **Load a skill** means: call the client's skill tool with the skill's name when one exists and lists it. Otherwise read `<SHELLY_ROOT>/skills/<name>/SKILL.md` in full and follow it. Both count as loading it. Resolve the skill's own `references/` and `scripts/` paths from its folder.
+- **Principles** (`principle-*`) are always read as files, never called as tools.
+- **The task list** is the client's todo or plan tool. With none, post the steps as a `- [ ]` checklist in your reply and update it when a step's state changes.
+- **Ask the user** means the client's question tool. With none, ask in your reply and end the turn.
+- **A secret** comes from the client's secret request tool when one exists (T3 Code: `request_secret`). Otherwise follow the repository's instructions (for example `op run` or `op read`). Never ask for a secret in chat.
+
+## Helpers (subagents)
+
+A helper is another agent that gets only the brief you write. It does not see your conversation.
+
+### Briefs
+
+Every brief starts from one file under `<SHELLY_ROOT>/references/briefs/`, plus the task.
+
+- `delegate.md`: a helper that writes code or runs a playbook step. It reads `skills/shelly-mode/SKILL.md` first.
+- `reader.md`: a helper that answers one read-only question.
+- `<SHELLY_ROOT>/references/maintainability-reviewer.md`, `spec-reviewer.md`, `ci-watcher.md`, and `briefs/comment-reviewer.md`: reviewers.
+
+Write the brief as: the absolute path of the brief file to read first, `<SHELLY_ROOT>`, the user's goal in one sentence, the task, file pointers (not pasted file bodies), what to return, and for any datastore the environment (staging or production) and a rule to print the target before the first write.
+
+### Roles and models
+
+Skills name a role, never a model. Roles: `feature, refactoring`, `bug-fix`, `perf-issue`, `hillclimb`, `judgment and prose`, `hardest tasks`, `how explorer`, `how explainer`, `why investigators`, `why synthesizer`, `reflect tooling`, `reflect judgment, divergent, synthesizer`, `arena runners`, `arena cross-judge pool`, `swarm workers`, `architect runners`, `interrogate reviewers`, `reader`.
+
+1. Read `~/.config/shelly-stack/models.md`. Each line is `<role>: <value>`. A value is `inherit` (the parent's provider and model) or `<provider>/<model>` followed by optional `key=value` options, for example `claudeAgent/claude-opus-5-5 effort=high`. Panel roles hold a comma-separated list, and one helper runs per entry.
+2. A role with no line, or no file, uses `inherit`.
+3. Before the first cross-provider spawn in a thread, call `orchestrator_capabilities` once. A value whose provider or model is not in the catalog is unavailable. Say so and ask the user. Never switch provider or model on your own.
+4. Before a fan-out, list each stage and its role value in your reply so the user can stop it before spend.
+5. Effort: start from the role's value. Raise it one step for the hardest work, lower it for routine work. Pass it in the provider's option (`effort` for Claude and Codex, `thought_level` for Gemini, as `orchestrator_capabilities` lists).
+
+### Spawning
+
+Pick the first path that fits:
+
+1. **T3 Code `delegate_task`.** Use it for another provider's model, any option the parent does not have, a separate checkout (`isolation: "worktree"`), and every background helper. Pass `target: {providerInstanceId, model, options}` from the role value, `role` (`implementation`, `research`, `review`, `design`, `test`, `general`), `mode: "async"`, and a short `title`. Keep the returned `taskId`.
+2. **The client's own subagent tool** (Claude Code `Agent`, Codex `spawn_agent`, Antigravity `invoke_subagent`). Use it when the helper runs on the parent's own provider and model with no extra options, and for read-only helpers when the client can enforce read-only (see below).
+3. **No spawn tool.** Do the step yourself in sequence and say the step ran without an independent helper.
+
+### Waiting
+
+- Start helpers asynchronously, then continue other work. When none is left, end the turn. The helper's completion wakes you. Read the result then (`task_status` for `delegate_task`).
+- Do not poll a running helper, sleep, loop in the shell, or schedule wakeups to wait for it.
+- Cancel a helper you no longer need with `task_cancel` (or the client's equivalent). Start no replacement unless the work still needs one.
+- A fan-out of N helpers is N async spawns in one turn. Cap N at the panel size or the skill's limit. The `Workflow` tool is used only when the user asked for a workflow.
+
+### Read-only helpers and reviewers
+
+- An enforced read-only helper is one the client sandboxes: Claude Code agents restricted to read tools, Antigravity `invoke_subagent` with `TypeName: "research"` or `define_subagent` with write tools off, a Codex read-only sandbox.
+- `delegate_task` has no read-only mode. For a reviewer on another provider, spawn it with `isolation: "worktree"`. When it returns, run `git -C <its worktree> status --porcelain` and `git -C <its worktree> log <base>..HEAD`. Both must be empty. If either is not, discard its output, report the breach, and remove that worktree.
+- `isolation: "worktree"` starts from the parent's last commit, so uncommitted edits are missing. Commit the work to a local branch first (a `sean/*` or scratch branch, not pushed), then spawn. Never create a helper's checkout by hand in the shell.
+- Never call a writable helper read-only because its brief says so.
+
+### Owning the result
+
+You own every helper's work. Read its diff and write your own summary. A second opinion is the same brief on a different model. Agreement is a strong signal.
+
+## PRs, CI, and history
+
+- **PRs and CI.** Use the client's PR tools when they exist (T3 Code: `pull_request_read`, `pull_request_create`, `pull_request_update`, `pull_request_review`, `pull_request_respond`, `pull_request_merge`, `ci_logs`, `ci_rerun`, `watch_pull_request`). Otherwise use `gh` (`gh pr checks`, `gh run view --log-failed`). Resolve the PR head before and after you read checks. A stale result or an empty check set is not a pass.
+- **Waiting on CI.** With `watch_pull_request`, watch and end the turn. Without it, check once per turn with bounded commands. A recurring check needs an explicit request and a scheduling tool (T3 Code: `schedule_task`).
+- **Earlier history.** Use the current conversation first. Then the client's thread tools (T3 Code: `t3_thread_search`, `t3_thread_read`, `t3_thread_list`). With none, use a transcript path the user gives. Never scan other projects' history.
+- **Showing the user something mid-turn.** Use the client's send tool when one exists (T3 Code: `send_to_user`).
 
 ## Authorization
 
-An explicit request to open or ship a PR includes focused commits, pushes, and opening or updating the PR. A review, test run, or local fix alone does not. CI repair may push when the current request authorizes bringing the PR to green. Honor existing authorization without asking again. Merge, deploy, send messages, or rewrite published history only when separately authorized. Never bypass required checks. Preserve unrelated changes and follow the repository's branch, commit, and PR conventions.
-
-## Reviewers
-
-Do the work in the parent unless the user or active instructions permit delegation. When an independent reviewer is required, use an available contained read-only agent. If the runtime cannot enforce that boundary, report independent review unavailable. A prompt asking a writable agent not to edit is not enforced isolation. Collect any external evidence in the parent through authorized read-only tools and supply the relevant excerpts to the reviewer. Do not send reviewer output directly to an external service.
-
-The [CI watcher](ci-watcher.md) supplies a bounded status report. The [maintainability reviewer](maintainability-reviewer.md) supplies findings without edits. The [spec reviewer](spec-reviewer.md) checks the same diff against its ticket or spec, also without edits. These prompts also work in the parent when independence is not required. Never recursively invoke the parent workflow from a reviewer.
-
-## CI and waits
-
-Inspect all PR-attached checks with `gh pr checks`. Use GitHub Actions job logs only for checks actually hosted there. Resolve the PR head before and after a check pass. A stale result or an empty check set does not establish success. Missing required checks remain unverified.
-
-Current-turn polling uses bounded commands and waits no longer than 60 seconds. Stay in the current turn until the requested terminal state or a real blocker. A future recurring check requires an explicit request and an available scheduling tool. Notify only on meaningful changes, completion, failure, or required user action. Never invent a background monitor.
-
-## History
-
-Use the current conversation first. For requested earlier history, read only the active workspace's `~/.claude/projects/<slug>/` directory, where every character of the absolute workspace path that is not a letter, digit, or `-` becomes `-`. Never scan unrelated projects. If the workspace cannot be resolved, use a user-provided transcript or a narrow digest. Draft status updates locally unless the user asks to send them.
+An explicit request to open or ship a PR includes focused commits, pushes, and opening or updating the PR. A review, test run, or local fix alone does not. CI repair may push when the request covers bringing the PR to green. Merge, deploy, send messages, or rewrite published history only when separately authorized. Never bypass required checks. Preserve unrelated changes and follow the repository's branch, commit, and PR rules.

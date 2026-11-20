@@ -1,4 +1,0 @@
-schema_version: "1.1"
-name: exhaust-the-design-space-on-bulk-edit
-context:
-  scaffold_script: scaffold.sh

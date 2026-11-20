@@ -1,4 +1,0 @@
-schema_version: "1.1"
-name: figure-it-out-on-ts-port
-context:
-  scaffold_script: scaffold.sh
