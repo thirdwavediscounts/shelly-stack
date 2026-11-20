@@ -15,7 +15,7 @@ SHELLY_ROOT=/absolute/path/to/shelly-stack
 ```
 
 - Claude Code: `claude plugin marketplace add "$SHELLY_ROOT"`, then `claude plugin install shelly-stack@shelly-stack`. Or from GitHub: `/plugin install shelly-stack --marketplace thirdwavediscounts/shelly-stack`. The plugin also runs four hooks from `hooks/claude-hooks.json`: a destructive-SQL guard, its one-time approval, a status-line check, and a prompt list after compaction.
-- Codex: `codex plugin marketplace add "$SHELLY_ROOT"`, then `codex plugin add shelly-stack@shelly-stack`.
+- Codex: `codex plugin marketplace add "$SHELLY_ROOT"`, then `codex plugin add shelly-stack@shelly-stack`. Codex runs a copy in `~/.codex/plugins/cache`, so rerun `codex plugin add shelly-stack@shelly-stack` after every change. Each skill's `agents/openai.yaml` sets its Codex display name and whether Codex may start it on its own.
 - Antigravity (Gemini): the repo root is an Antigravity plugin (`plugin.json`). Link it once into the plugins folder of each config root. Standalone Antigravity reads `$HOME/.gemini/config/`. T3 Code runs Antigravity with its own root, `$HOME/.t3/userdata/providers/antigravity/<id>/config/`.
 
 ```bash
