@@ -21,7 +21,8 @@ shelly-stack bundles this skill because most clients have no built-in. It sets t
 ---
 name: <kebab-case, matches the directory>
 description: <one YAML scalar; when to use it, in the user's words, trigger phrases included>
-user-invocable: false            # every principle-* skill, and only those; hides it from the / menu and the Skill list
+user-invocable: false            # every principle-* skill, and only those; hides it from the / menu
+disable-model-invocation: true   # the same skills; keeps it off the model's skill list
 argument-hint: "<what to pass after /name>"   # optional; shown in autocomplete
 allowed-tools: Read, Grep, Glob  # optional; pre-approves these tools for the invoking turn, it restricts nothing
 disallowed-tools: <tool name>  # optional; removes tools while the skill is active
@@ -31,7 +32,7 @@ disallowed-tools: <tool name>  # optional; removes tools while the skill is acti
 Rules:
 
 - `description` is the only text Claude sees before deciding to load the skill. Put the triggers there ("Use for X, Y, or when the user says Z"), not a summary of the body. Quote it or use `description: >-` when punctuation or wrapping needs it. The skill listing truncates `description` plus `when_to_use` at 1,536 characters, so put the key use case first.
-- Set `user-invocable: false` on every `principle-*` skill and on no other skill. `skills/shelly-mode/scripts/check_routing.py` fails CI otherwise. Every other skill stays runnable by both the user and the agent. To keep a heavy skill from firing on casual turns, narrow its description to explicit requests and the skills that call it.
+- Set `user-invocable: false` and `disable-model-invocation: true` on every `principle-*` skill and on no other skill. `skills/shelly-mode/scripts/check_routing.py` fails CI otherwise. Antigravity reads only the second, and its skill list has a size budget that the principles would fill. Every other skill stays runnable by both the user and the agent. To keep a heavy skill from firing on casual turns, narrow its description to explicit requests and the skills that call it.
 - The client ignores a key it does not recognize without an error, so a misspelled key is a silent no-op. Other documented keys (`when_to_use`, `arguments`, `model`, `effort`, `context: fork` with `agent`, `hooks`, `paths`) are for special cases; the full table is in the client's skill docs.
 - `$ARGUMENTS` in the body is replaced with whatever the user typed after `/name`.
 
@@ -41,7 +42,7 @@ Write for an agent that will follow it under load, per the **technical-writing**
 
 - Lead with what the skill does and when. One paragraph.
 - Steps as a numbered list, each ending in a checkable state. Name the action (spawn a helper, ask the user, run a command) and the model role when a step delegates.
-- Reference sibling files by relative path. Reference other skills by bold name ("the **how** skill") so the reader knows to load them, and never paste their contents. A `principle-*` skill sets `user-invocable: false`, so the client does not list it. Name it by the relative path to its `SKILL.md` and say to read it, as in "Read `../principle-prove-it-works/SKILL.md`".
+- Reference sibling files by relative path. Reference other skills by bold name ("the **how** skill") so the reader knows to load them, and never paste their contents. A `principle-*` skill sets `user-invocable: false` and `disable-model-invocation: true`, so the client does not list it and its skill tool refuses it. Name it by the relative path to its `SKILL.md` and say to read it, as in "Read `../principle-prove-it-works/SKILL.md`".
 - Say what the reply must contain. A skill that ends without an output contract produces a different reply every run.
 - Cut anything the agent already knows. A skill is not a manual.
 

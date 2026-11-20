@@ -8,7 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 MODE = ROOT / "skills/shelly-mode"
 FRONTMATTER = re.compile(r"\A---\n(.*?)\n---\n", re.S)
-DISABLED = re.compile(r"^disable-model-invocation:", re.M)
+DISABLED = re.compile(r"^disable-model-invocation:\s*true\s*$", re.M)
 HIDDEN = re.compile(r"^user-invocable:\s*false\s*$", re.M)
 SKILL_REF = re.compile(r"\bshelly-stack:([a-z0-9-]*[a-z0-9])(?![a-z0-9<{-])")
 PLAYBOOK_REF = re.compile(r"\bplaybooks/([a-z0-9-]+)\.md\b")
@@ -36,8 +36,8 @@ def main() -> int:
     problems = []
 
     for name, body in skills.items():
-        if DISABLED.search(frontmatter(body)):
-            problems.append(f"skills/{name}: sets disable-model-invocation, which makes the Skill tool refuse it")
+        if name.startswith("principle-") != bool(DISABLED.search(frontmatter(body))):
+            problems.append(f"skills/{name}: only principle-* skills set disable-model-invocation: true, and every one of them does")
         if name.startswith("principle-") != bool(HIDDEN.search(frontmatter(body))):
             problems.append(f"skills/{name}: only principle-* skills set user-invocable: false, and every one of them does")
         if name.startswith("principle-"):
