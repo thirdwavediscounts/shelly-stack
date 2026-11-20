@@ -1,6 +1,6 @@
 ---
 name: untangle-codebase
-description: "Untangle one app or package so later changes land in one place. Lists every hidden link, needless link, surplus piece, and special case, redesigns from first principles, fixes all of it against a pinned behavior baseline, and repeats until nothing worth fixing is left. Runs only when the user types /untangle-codebase."
+description: "Untangle one app or package so later changes land in one place. Lists every hidden link, needless link, surplus piece, and special case, redesigns from first principles, fixes all of it against a pinned behavior baseline, and repeats until nothing worth fixing is left. Runs only when the user asks to untangle the codebase by name."
 argument-hint: "[app, package, or folder to untangle]"
 ---
 
@@ -69,7 +69,7 @@ Read `../principle-redesign-from-first-principles/SKILL.md` and `../principle-mo
 
 ## 5. Check and repeat
 
-Run the **swarm** skill with four read-only workers over the unit, one each for hidden links, needless links, surplus, and special cases. Each returns `file:line` findings. Take what they find back to step 2. Stop when a round finds nothing worth fixing.
+Run the **shelly-swarm** skill with four read-only workers over the unit, one each for hidden links, needless links, surplus, and special cases. Each returns `file:line` findings. Take what they find back to step 2. Stop when a round finds nothing worth fixing.
 
 The unit is done when:
 

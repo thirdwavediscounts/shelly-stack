@@ -1,65 +1,42 @@
 # shelly-stack
 
-this repository is the Claude Code plugin for shelly-stack, forked from [pstack](https://github.com/cursor/plugins/tree/main/pstack) (upstream MIT, by poteto / Lauren Tan). The Codex plugin lives in its own repository, `shelly-stack-codex`, and is maintained separately. A change that applies to both clients is ported by hand.
+shelly-stack is Sean's fork of [pstack](https://github.com/cursor/plugins/tree/main/pstack) (MIT, by poteto / Lauren Tan) for Third Wave Discounts. It holds poteto's playbooks and principles, adapted to how we ship.
 
-shelly-stack is Sean's fork of pstack for Third Wave Discounts: poteto's playbooks and principles, adapted to how we ship.
+It helps an agent write less code of higher quality. It turns one coding agent into a small engineering team that reads first, verifies its work, and reviews before it ships.
 
-there's a growing sense that ai writes too much slop code. we agree. if you want to go fast, go deep first.
+This package runs on any model in any client that can read files and run a shell. That includes Claude, Codex, and Gemini through Antigravity, inside T3 Code or on their own. [`references/runtime.md`](./references/runtime.md) maps each action a skill names to the tool each client offers.
 
-**shelly-stack helps you write less, but higher quality code.** it turns your coding agent into a real engineering team. the goal is not to maximize loc, in fact it's the opposite.
+## Install
 
-**shelly-stack gives you fearless parallelism.** when you can go deep on one agent and trust it to write good, verifiable code, you can truly parallelize with confidence. start multiple agents up with `shelly-mode` and trust that they'll apply rigorous engineering principles to their work.
-
-**multi-model work gives you the best of all worlds.** every frontier model has strengths and weaknesses. use any model available in your client.
-
-fork it. improve it. make it yours. PRs are welcome! 
-
-## install
+Link each skill folder into your client's global skills folder. Set `SHELLY_ROOT` to this checkout.
 
 ```bash
-/plugin marketplace add thirdwavediscounts/shelly-stack-claude
-/plugin install shelly-stack@shelly-stack
+SHELLY_ROOT=/absolute/path/to/shelly-stack
+SKILLS_DIR="$HOME/.gemini/config/skills"   # pick the folder for your client below
+mkdir -p "$SKILLS_DIR"
+for d in "$SHELLY_ROOT"/skills/*/; do ln -sfn "${d%/}" "$SKILLS_DIR/$(basename "$d")"; done
 ```
 
-For a local checkout, run `/plugin marketplace add /absolute/path/to/shelly-stack-claude` instead.
+- Antigravity (Gemini): `$HOME/.gemini/config/skills/`. Antigravity discovers global skills there.
+- Codex: `$HOME/.agents/skills/`.
+- Claude: `$HOME/.claude/skills/`.
 
-## code review
+Claude and Codex users can use the client-specific plugins `shelly-stack-claude` and `shelly-stack-codex` instead. Do not install a plugin and these links together. Both register the same skill names.
 
-shelly-stack includes `thermo-nuclear-code-quality-review`, adapted from Third Wave Discounts' MIT-licensed Team Kit fork (see [LICENSE.team-kit](LICENSE.team-kit)). Opening a PR spawns the `thermo-nuclear-code-quality-review` agent, which reviews with that skill's rubric.
+## Get started
 
-`untangle-codebase` is adapted from Caldo's MIT-licensed [skills](https://github.com/caldoai/skills) (see [LICENSE.caldo-skills](LICENSE.caldo-skills)).
-
-## get started
-
-two steps:
-
-1. run [`/setup-shelly-stack`](./skills/setup-shelly-stack/SKILL.md), then choose your models.
-2. use [`/shelly-mode`](./skills/shelly-mode/SKILL.md) whenever the task requires rigor.
-
-new here? the [shelly-stack guide](./docs/guide/README.md) walks you through a first real task, from setup and prompting through verification and overnight runs. stuck, or unsure which skill fits? ask [`/shelly-help`](./skills/shelly-help/SKILL.md).
-
-that's it. the other skills are situational; the mode skill uses them as needed. unconfigured roles keep their Anthropic defaults.
-
-## usage
-
-use [`/shelly-mode`](./skills/shelly-mode/SKILL.md) at the start of a task. it reads your request, picks from a set of playbooks, and runs the other skills as the steps need them.
-
-### just use [`/shelly-mode`](./skills/shelly-mode/SKILL.md)
-
-this skill is the main shortcut. i use it whenever i need the agent to do rigorous engineering work. it comes with twenty-three playbooks:
+1. Ask for the [`setup-shelly-stack`](./skills/setup-shelly-stack/SKILL.md) skill. It finds your models and writes `~/.config/shelly-stack/models.md`, which picks a model and effort per role. Without it, every role runs on your current model.
+2. Start any task that needs rigor with [`shelly-mode`](./skills/shelly-mode/SKILL.md). Say "use shelly-mode", then the goal and how you will know it is done.
+3. Unsure which skill fits? Ask for [`shelly-help`](./skills/shelly-help/SKILL.md).
 
 ```
-/shelly-mode this pr has a subtle bug where the scroll drifts every 750ms even when idle. repro
-first, then fix and verify.
+use shelly-mode. this pr has a subtle bug where the scroll drifts every 750ms even when idle.
+repro first, then fix and verify.
 ```
 
-```
-/shelly-mode i'm going to bed. land the stack even if ci flakes. i want everything merged by
-morning.
-```
+shelly-mode matches the task to a playbook and posts its steps as a checklist. It runs the other skills (`how`, `why`, `architect`, `arena`, `shelly-swarm`, `interrogate`, `unslop`, `no-comments`, and the principles) as the steps need them. When you switch subjects, say "new task" so it matches a playbook again.
 
-<details>
-<summary>the twenty-three playbooks</summary>
+## Playbooks
 
 | playbook | for |
 |---|---|
@@ -87,205 +64,24 @@ morning.
 | [multi-phase plan](./skills/shelly-mode/playbooks/multi-phase-plan.md) | work that spans phases or stacked PRs. |
 | [worktree cleanup](./skills/shelly-mode/playbooks/worktree-cleanup.md) | reclaim disk by pruning merged or abandoned worktrees and stale ios simulators, safety-gated. |
 
-</details>
+## Make it yours
 
+- After a task that taught you something, ask for the [`reflect`](./skills/reflect/SKILL.md) skill. It proposes edits to the skills.
+- When agents keep making the same mistake, ask for the [`correct`](./skills/correct/SKILL.md) skill. It fixes the repo so the mistake cannot come back.
+- To change models or budget, run [`setup-shelly-stack`](./skills/setup-shelly-stack/SKILL.md) again.
 
+## Checks
 
-when invoked it:
-
-1. matches your task to a [playbook](./skills/shelly-mode/playbooks/) and posts its steps as a checklist in the reply, copied verbatim. a skipped step stays as `skip: <reason>`.
-2. routes to the other skills as the steps fire.
-3. before every PR, cuts code slop, then runs `unslop` and `no-comments` in that order through the [opening a pr](./skills/shelly-mode/playbooks/opening-a-pr.md) playbook. you don't run them by hand.
-4. writes unslopped replies framed for the consumer and the maintainer.
-
-the full rules and playbooks live in [`skills/shelly-mode/SKILL.md`](./skills/shelly-mode/SKILL.md).
-
-[`/shelly-mode`](./skills/shelly-mode/SKILL.md) stays in effect for the rest of the session. When you switch subjects, say "new task" so it re-matches the playbook. If a long session drifts, invoke it again.
-
-only you can invoke `/shelly-mode`. the agent cannot call it through the Skill tool. subagents load it by reading its SKILL.md file, and the plugin's `shelly-*` agents do that on their own.
-
-For long work, use `/loop`.
-
-## skills
-
-[`/shelly-mode`](./skills/shelly-mode/SKILL.md) runs most of these for you when a step needs them (`how`, `why`, `architect`, `arena`, `swarm`, `interrogate`, `unslop`, `no-comments`, `technical-writing`, `tdd`, and the principles). the table below is for when you want one directly:
-
-```
-/how do we cancel runs? do we have an n+1 when we look up every run to cancel?
+```bash
+python3 tests/check_agnostic.py
 ```
 
-```
-/interrogate review this pr.
-```
+It fails when a skill or reference names one client's tools, agent types, models, or config paths.
 
-<details>
-<summary>all skills</summary>
+## License
 
-| skill | use it when |
-|---|---|
-| [`/shelly-mode`](./skills/shelly-mode/SKILL.md) | default entry point for any non-trivial task. |
-| [`/shelly-help`](./skills/shelly-help/SKILL.md) | you're new to shelly-stack, or unsure which skill, playbook, or principle fits. finds out what you're trying to do, answers that part, and hands you a prompt to type. runs only when you type `/shelly-help`. |
-| [`/in-your-own-words`](./skills/in-your-own-words/SKILL.md) | you want the agent to play back your goal and the problem before it starts. runs only when you type `/in-your-own-words`. |
-| [`/sharpen`](./skills/sharpen/SKILL.md) | you want a prompt made deeper, not bigger, before you send it: what a top professional would do that you didn't ask for, the raw material they'd start from, their methods and tools, and an outside check that the result is right. hands back the rewritten prompt and leaves your choices open. doesn't do the task. runs only when you type `/sharpen`. |
-| [`/how`](./skills/how/SKILL.md) | you want a walkthrough of how a subsystem works. |
-| [`/why`](./skills/why/SKILL.md) | you want to know why something was built this way. discovers available MCPs at run time and queries each evidence category in parallel (source control, issue tracker, long-form docs, real-time chat, infra observability, error tracking, analytics warehouse). |
-| [`/ticket`](./skills/ticket/SKILL.md) | you have a Linear Dev ticket id. it reads and triages the ticket, routes the build to the right playbook, and keeps Linear current until the PR merges. |
-| [`/recall`](./skills/recall/SKILL.md) | you're starting or resuming work and want your recent context on a topic rebuilt from your own chat history and the shared record, handed back as a tight current-state brief. |
-| [`/ketchup`](./skills/ketchup/SKILL.md) | you want what changed in this chat since your last message, in plain words and small visuals, with every item waiting on you listed and decidable from the reply alone, even when that makes the reply long. |
-| [`/ketchup-video`](./skills/ketchup-video/SKILL.md) | you want the `/ketchup` catch-up as a short subtitled video of slides, with the calls waiting on you as text under it. |
-| [`/blast-radius`](./skills/blast-radius/SKILL.md) | you have a small-looking change and want to know what else it could break, with the one fact it's safe because of proven by running code, not asserted. |
-| [`/compress-the-clock`](./skills/compress-the-clock/SKILL.md) | a check would mean waiting hours or days. forces the expiry on a copy, replays past events, or forces time at the scheduler, and dates only what that can't reach. |
-| [`/architect`](./skills/architect/SKILL.md) | you're about to write code that crosses a function boundary and want the caller's usage, types, and module shape settled first. |
-| [`/arena`](./skills/arena/SKILL.md) | you want N parallel attempts at the same thing, then to grab the best parts of each. |
-| [`/swarm`](./skills/swarm/SKILL.md) | you want N parallel workers across different slices or races, then one aggregated report. |
-| [`/interrogate`](./skills/interrogate/SKILL.md) | you have a diff and want different models to try to break it, keeping only findings a run proves. |
-| [`/setup-shelly-stack`](./skills/setup-shelly-stack/SKILL.md) | you want to pick which models shelly-stack uses per role. detects your models and writes a config rule. |
-| [`/reflect`](./skills/reflect/SKILL.md) | a long task landed and you want the recipe captured as a skill edit. |
-| [`/correct`](./skills/correct/SKILL.md) | you keep correcting agents for the same mistakes. mines history for mistake classes, fixes each at the highest level that works (architecture, then types, lint, and ci, then tests, with docs last), and keeps a table pairing each rule with what enforces it. |
-| [`/teach`](./skills/teach/SKILL.md) | you want to actually understand a change or subsystem, not just have it summarized. runs how + why and weaves one plain explanation, built up diagram by diagram. |
-| [`/grilling`](./skills/grilling/SKILL.md) | you want to be interviewed about a plan before anyone builds it. asks in numbered rounds with a recommended answer each, looks up facts itself. |
-| [`/wizard`](./skills/wizard/SKILL.md) | setup needs keys or clicks only you can do. writes a bash script that walks you through it and stores each value without the agent seeing it. |
-| [`/tdd`](./skills/tdd/SKILL.md) | you're fixing a bug and there's a cheap local test path. write the failing test first, then the fix. |
-| [`/benchmark-checklist`](./skills/benchmark-checklist/SKILL.md) | you ran a benchmark or measured a speedup or regression. vets the number (limiter, tuning, errors, repeat runs, end-to-end relevance) before you report or act on it. |
-| [`/no-comments`](./skills/no-comments/SKILL.md) | strip comments from a diff. spawns Comment Sicko, fixes accepted findings, offers encodings for claimed constraints. opening a pr runs it on every PR, so run it yourself only on work not yet going through a PR. |
-| [`/typescript-best-practices`](./skills/typescript-best-practices/SKILL.md) | you're reading or editing typescript. grounds the type-system-discipline principle in syntax. |
-| [`/untangle-codebase`](./skills/untangle-codebase/SKILL.md) | you want one app or package refactored until a typical change lands in one place. lists every hidden link, needless link, surplus piece, and special case, redesigns, fixes all of it against a behavior pin, and repeats until a round finds nothing worth fixing. one PR per unit. runs only when you type `/untangle-codebase`. |
-| [`/figure-it-out`](./skills/figure-it-out/SKILL.md) | no bundled playbook fits. designs a rigorous, auditable playbook for the task. |
-| [`/show-me-your-work`](./skills/show-me-your-work/SKILL.md) | you want a reviewable decision trail. logs decisions to a tsv you can commit. |
-| [`/create-verification-skill`](./skills/create-verification-skill/SKILL.md) | your project has no scripted way to prove app behavior. generates a project-local verify skill with a feature map, for any language or platform. |
-| [`/maintain-verification-skill`](./skills/maintain-verification-skill/SKILL.md) | your verify skill's feature map has drifted from the app. source wave + one live pass, at most one PR of proven corrections. |
-| [`/create-formal-verification-skill`](./skills/create-formal-verification-skill/SKILL.md) | a race, retry, or state machine needs more than tests. picks the riskiest promise, checks it with a model checker or verifier, and writes a project-local skill to rerun it. |
-| [`/maintain-formal-verification-skill`](./skills/maintain-formal-verification-skill/SKILL.md) | verified code changed without a recheck. updates the model from the code, reruns, and says whether each failure is drift or a real bug. |
-| [`/statechart`](./skills/statechart/SKILL.md) | you want a flow checked and drawn. runs a TLA+ model through TLC and draws a Mermaid statechart with the shortest path to each broken rule. |
-| [`/unslop`](./skills/unslop/SKILL.md) | you're cleaning up writing. removes AI tells. |
-| [`/bro`](./skills/bro/SKILL.md) | you want the last message restated in plain human language, no jargon. |
-| [`/technical-writing`](./skills/technical-writing/SKILL.md) | layered doc standard (Diátaxis + Google developer style + STE + Global English) for docs, RFCs, readmes, PR descriptions, commit messages. |
-| [`/pr`](./skills/pr/SKILL.md) | you're writing a PR body. one summary view, before-and-after evidence, and merge danger. opening a pr runs it on every PR. |
+MIT, see [LICENSE](LICENSE).
 
-</details>
-
-
-
-### examples
-
-mostly i type [`/shelly-mode`](./skills/shelly-mode/SKILL.md) at the start of a task and let it route to a playbook. the other skills fire as the steps need them. a few i reach for directly.
-
-
-<details>
-<summary>all the examples</summary>
-
-```
-bug fix:           /shelly-mode this pr has a subtle bug where the scroll drifts every 750ms even
-                   when idle. repro first, then fix and verify.
-perf:              /shelly-mode a big list takes a second or two to load even though we virtualize.
-                   run a cpu trace and tell me why.
-feature:           /shelly-mode build a small feature behind a feature flag. verify it really works.
-prototype:         /shelly-mode build two prototypes of the markdown renderer so we can compare.
-                   spawn an agent for each.
-multi-phase:       /shelly-mode open source these skills as a plugin. nothing internal leaks, work
-                   in a temp dir, show me the dependency graph first.
-overnight run:     /shelly-mode i'm going to bed. land the stack even if ci flakes. i want
-                   everything merged by morning.
-babysit:           /shelly-mode check on pr 123. anything outstanding?
-visual parity:     /shelly-mode the row spacing is too tall when this flag is on. the second image
-                   is correct. repro and fix until it matches.
-figure it out:     /shelly-mode i'm stepping away. migrate every caller from the synchronous store
-                   to the new async one, keeping behavior identical. i want to trust it was done
-                   right when i'm back.
-how:               /how do we cancel runs? do we have an n+1 when we look up every run to cancel?
-why:               /why is this feature flag not on yet?
-architect:         design this instrumentation to be high signal with no false positives. /architect
-                   this first.
-arena:             /arena take my prompt to the arena verbatim. i want to compare their proposals
-                   with yours.
-swarm:             /swarm check every package under packages/ against its check.sh. one worker per
-                   package. one report.
-interrogate:       /interrogate review this pr.
-tdd:               /tdd implement
-unslop:            can we unslop and tighten the new changes?
-reflect:           /reflect that took too long. capture what we learned so the next run doesn't
-                   repeat it.
-correct:           /correct
-show-me-your-work: /show-me-your-work keep a decision trail i can review when i'm back.
-help:              /shelly-help which skill should i use to review this branch?
-```
-
-</details>
-
-## the `shelly-agent` and Comment Sicko subagents
-
-shelly-stack also ships a subagent prompt that runs my style end to end. it's exposed as [`subagent_type: "shelly-stack:shelly-agent"`](./agents/shelly-agent.md).
-
-[`/shelly-mode`](./skills/shelly-mode/SKILL.md) runs in your chat. [`shelly-agent`](./agents/shelly-agent.md) runs the same rules in a subagent. it reads the shelly-mode SKILL.md file before any work.
-
-shelly-stack also ships [Comment Sicko](./agents/comment-sicko.md). usually invoke it through [`/no-comments`](./skills/no-comments/SKILL.md), not directly.
-
-it also ships these agents:
-
-- pinned shelly agents. each is `shelly-agent` with a fixed model and effort: `shelly-opus-{low,medium,high,xhigh}`, `shelly-fable-{low,medium,high,xhigh}`, and `shelly-sonnet-{low,medium,high}`. a role in `~/.claude/rules/shelly-stack-models.md` can name one, for example `shelly-stack:shelly-opus-medium`.
-- [`shelly-reader`](./agents/shelly-reader.md) answers one read-only question: search code, explain a flow, or check one fact. it does not read the shelly-mode SKILL.md, so a lookup starts with less context.
-- [`thermo-nuclear-code-quality-review`](./agents/thermo-nuclear-code-quality-review.md) reviews a diff for maintainability. opening a pr runs it on every diff that changes code.
-- [`spec-conformance-review`](./agents/spec-conformance-review.md) checks a diff against its ticket or spec. opening a pr runs it beside the maintainability review.
-- [`ci-watcher`](./agents/ci-watcher.md) returns a short, read-only snapshot of a PR's checks when a parent agent asks for one.
-
-## principles
-
-twenty-four short skills, one principle each. `shelly-mode` indexes them inline and reads that index at task start. the standalone files are there so other skills can reference a principle by name, and so the index can point at the full rule for each.
-
-<details>
-<summary>all twenty-four principles</summary>
-
-| principle | group | rule |
-|---|---|---|
-| [laziness-protocol](./skills/principle-laziness-protocol/SKILL.md) | core | Bias toward deletion and the smallest change that solves the problem. |
-| [foundational-thinking](./skills/principle-foundational-thinking/SKILL.md) | core | Apply before writing logic: choosing core types and data structures, sequencing scaffold-vs-feature work, asking what concurrent actors share. Get the data structures right so downstream code becomes obvious. |
-| [redesign-from-first-principles](./skills/principle-redesign-from-first-principles/SKILL.md) | core | Redesign as if the requirement had been a foundational assumption from day one, instead of bolting it on. |
-| [attack-the-premise](./skills/principle-attack-the-premise/SKILL.md) | core | Apply when two or more fixes that share one premise have failed the same gate. Write the premise down and test it directly before you write another fix that assumes it. |
-| [subtract-before-you-add](./skills/principle-subtract-before-you-add/SKILL.md) | core | Remove dead weight, redundant validators, and stub references first, then build on the simpler base. |
-| [minimize-reader-load](./skills/principle-minimize-reader-load/SKILL.md) | core | Count layers between question and answer, and hidden state in the reader's head; collapse one-caller wrappers and shrink mutable scope. |
-| [outcome-oriented-execution](./skills/principle-outcome-oriented-execution/SKILL.md) | core | Apply during planned rewrites and migrations with explicit phase boundaries. Converge on the target architecture; don't preserve smooth intermediate states with throwaway compatibility code. |
-| [experience-first](./skills/principle-experience-first/SKILL.md) | core | Choose user delight over implementation convenience; ship fewer polished features over more rough ones. |
-| [exhaust-the-design-space](./skills/principle-exhaust-the-design-space/SKILL.md) | core | Build 2-3 competing prototypes and compare side by side before committing. |
-| [build-the-lever](./skills/principle-build-the-lever/SKILL.md) | core | Apply to any non-trivial work, not just bulk work: edits, migrations, analyses, checks. Build the tool that does it or proves it (codemod, script, generator, or a skill your subagents follow) instead of working by hand. The tool is the artifact a reviewer can rerun. |
-| [model-the-domain](./skills/principle-model-the-domain/SKILL.md) | architecture | Encode the domain in a structure instead of scattered conditionals. |
-| [boundary-discipline](./skills/principle-boundary-discipline/SKILL.md) | architecture | Concentrate guards at system boundaries (CLI, config, network, external APIs); trust internal types and keep business logic in pure functions. |
-| [type-system-discipline](./skills/principle-type-system-discipline/SKILL.md) | architecture | Make illegal states unrepresentable, brand semantic primitives, parse external data at boundaries, exhaust variants, derive from authoritative schemas. |
-| [make-operations-idempotent](./skills/principle-make-operations-idempotent/SKILL.md) | architecture | Converge to the same end state regardless of partial prior runs. |
-| [migrate-callers-then-delete-legacy-apis](./skills/principle-migrate-callers-then-delete-legacy-apis/SKILL.md) | architecture | Migrate callers and delete the old API in the same wave instead of preserving compatibility layers. |
-| [separate-before-serializing-shared-state](./skills/principle-separate-before-serializing-shared-state/SKILL.md) | architecture | Eliminate the sharing first; serialize structurally only when one shared writer is a real invariant. |
-| [prove-it-works](./skills/principle-prove-it-works/SKILL.md) | verification | Apply after completing a task, before declaring done. Verify against the real artifact (run the feature, read the actual value, inspect the diff), not a proxy, self-report, or 'it compiles.'. |
-| [fix-root-causes](./skills/principle-fix-root-causes/SKILL.md) | verification | Trace each symptom back to the first place the system went wrong and fix it there. A guard is a fix only when the state it handles is legitimate. |
-| [sequence-verifiable-units](./skills/principle-sequence-verifiable-units/SKILL.md) | verification | Apply to multi-step work (sweeps, migrations, runs of similar edits) and to how you stack commits and PRs. Break work into small units that each end in a verifiable state, check each before the next, and order delivery so the sequence proves itself to a reviewer. |
-| [test-behavior-not-implementation](./skills/principle-test-behavior-not-implementation/SKILL.md) | verification | Apply when you write, change, or keep a test. Assert what the code's users can observe, so the test fails when that behavior breaks and keeps passing when only the internals change. |
-| [explain-the-number](./skills/principle-explain-the-number/SKILL.md) | verification | Apply before you trust, report, or act on a number you measured: a speedup, a regression, a throughput, a latency, or an eval result. Find what limits it, and rule out that it measured something other than the work you think. |
-| [guard-the-context-window](./skills/principle-guard-the-context-window/SKILL.md) | delegation | Route bulk to subagents; keep summaries in the main thread, not raw payloads. |
-| [never-block-on-the-human](./skills/principle-never-block-on-the-human/SKILL.md) | delegation | Proceed, present the result, let the human course-correct after the fact; reserve confirmation for irreversible actions. |
-| [encode-lessons-in-structure](./skills/principle-encode-lessons-in-structure/SKILL.md) | meta | Encode the rule as a lint, metadata flag, runtime check, or script instead of more text. |
-
-</details>
-
-## why are there no planning skills?
-
-Claude Code has plan support that works with shelly-stack. but personally, i don't believe in planning. the best spec is code. if you do want to make a plan, [`/shelly-mode`](./skills/shelly-mode/SKILL.md) covers it, but it's not a default. [`/grilling`](./skills/grilling/SKILL.md) is not a planner either. it settles the product decisions only you can make, then hands them to the normal playbooks.
-
-## make it yours
-
-`shelly-mode` is my style. you may not want exactly that.
-
-after a task that taught you something, type [`/reflect`](./skills/reflect/SKILL.md). it reviews the transcript and proposes edits to the skills.
-
-when agents keep making the same mistake, type [`/correct`](./skills/correct/SKILL.md). it fixes the repo so the mistake can't come back.
-
-models are configurable too. run [`/setup-shelly-stack`](./skills/setup-shelly-stack/SKILL.md). it writes `~/.claude/rules/shelly-stack-models.md`.
-
-## hooks
-
-the plugin registers these hooks in [`hooks/hooks.json`](./hooks/hooks.json):
-
-- `destructive-sql` stops destructive SQL, such as `DROP TABLE`, until you approve it.
-- `status-line` makes a reply that used a tool end with a line that starts `Done:`, `Running:`, or `Waiting on you:`. it also blocks a reply that ends by offering to do the work, such as "want me to", instead of doing it, unless that last line starts `Waiting on you:`.
-- `compact-prompts` runs after the chat is compacted. it adds up to your last 40 typed prompts back, so Claude keeps the decisions in them.
-
-## license
-
-MIT. `grilling`, `wizard`, `pr`, the spec reviewer, and parts of the Bug fix playbook are adapted from [Matt Pocock's skills](https://github.com/mattpocock/skills) (MIT, see [LICENSE.mattpocock-skills](LICENSE.mattpocock-skills)).
+- `thermo-nuclear-code-quality-review` is adapted from Third Wave Discounts' MIT-licensed Team Kit fork (see [LICENSE.team-kit](LICENSE.team-kit)).
+- `untangle-codebase` is adapted from Caldo's MIT-licensed [skills](https://github.com/caldoai/skills) (see [LICENSE.caldo-skills](LICENSE.caldo-skills)).
+- `grilling`, `wizard`, `pr`, the spec reviewer, and parts of the Bug fix playbook are adapted from [Matt Pocock's skills](https://github.com/mattpocock/skills) (MIT, see [LICENSE.mattpocock-skills](LICENSE.mattpocock-skills)).

@@ -21,7 +21,7 @@ Every brief starts from one file under `<SHELLY_ROOT>/references/briefs/`, plus 
 
 - `delegate.md`: a helper that writes code or runs a playbook step. It reads `skills/shelly-mode/SKILL.md` first.
 - `reader.md`: a helper that answers one read-only question.
-- `<SHELLY_ROOT>/references/maintainability-reviewer.md`, `spec-reviewer.md`, `ci-watcher.md`, and `briefs/comment-reviewer.md`: reviewers.
+- `<SHELLY_ROOT>/references/maintainability-reviewer.md`, `spec-reviewer.md`, `ci-watcher.md`, and `briefs/comment-sicko.md`: reviewers.
 
 Write the brief as: the absolute path of the brief file to read first, `<SHELLY_ROOT>`, the user's goal in one sentence, the task, file pointers (not pasted file bodies), what to return, and for any datastore the environment (staging or production) and a rule to print the target before the first write.
 
@@ -33,7 +33,7 @@ Skills name a role, never a model. Roles: `feature, refactoring`, `bug-fix`, `pe
 2. A role with no line, or no file, uses `inherit`.
 3. Before the first cross-provider spawn in a thread, call `orchestrator_capabilities` once. A value whose provider or model is not in the catalog is unavailable. Say so and ask the user. Never switch provider or model on your own.
 4. Before a fan-out, list each stage and its role value in your reply so the user can stop it before spend.
-5. Effort: start from the role's value. Raise it one step for the hardest work, lower it for routine work. Pass it in the provider's option (`effort` for Claude and Codex, `thought_level` for Gemini, as `orchestrator_capabilities` lists).
+5. Effort: start from the role's value. Raise it one step for the hardest work, lower it for routine work. Pass it in the provider's option (the option id `orchestrator_capabilities` lists for that model, such as `effort`, `reasoningEffort`, or `thought_level`).
 
 ### Spawning
 
@@ -64,7 +64,7 @@ You own every helper's work. Read its diff and write your own summary. A second 
 ## PRs, CI, and history
 
 - **PRs and CI.** Use the client's PR tools when they exist (T3 Code: `pull_request_read`, `pull_request_create`, `pull_request_update`, `pull_request_review`, `pull_request_respond`, `pull_request_merge`, `ci_logs`, `ci_rerun`, `watch_pull_request`). Otherwise use `gh` (`gh pr checks`, `gh run view --log-failed`). Resolve the PR head before and after you read checks. A stale result or an empty check set is not a pass.
-- **Waiting on CI.** With `watch_pull_request`, watch and end the turn. Without it, check once per turn with bounded commands. A recurring check needs an explicit request and a scheduling tool (T3 Code: `schedule_task`).
+- **Waiting on CI.** With `watch_pull_request`, watch and end the turn. Without it, check once per turn with bounded commands. A recurring check needs a scheduling tool (T3 Code: `schedule_task`) and either an explicit request or a playbook step that arms one for work the user handed off (autonomous run, multi-phase plan, babysit, a long bug hunt).
 - **Earlier history.** Use the current conversation first. Then the client's thread tools (T3 Code: `t3_thread_search`, `t3_thread_read`, `t3_thread_list`). With none, use a transcript path the user gives. Never scan other projects' history.
 - **Showing the user something mid-turn.** Use the client's send tool when one exists (T3 Code: `send_to_user`).
 

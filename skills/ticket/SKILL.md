@@ -2,7 +2,7 @@
 name: ticket
 description: >-
   Drive one Linear Dev ticket from id to merged PR, and file follow-up work as issues/sub-issues.
-  Use when the task is a Dev ticket id ("DEV-200", "work DEV-142", /ticket DEV-99): read it,
+  Use when the task is a Dev ticket id ("DEV-200", "work DEV-142"): read it,
   triage or investigate if thin, route the build to the right playbook, keep Linear current
   (status, comments, PR link). Also use, on an explicit ask, to file follow-ups from design or
   investigation as a parent plus sub-issues. Not general Linear admin.
@@ -65,4 +65,4 @@ Run this only when asked to file follow-ups, usually at the tail of an **archite
 - The real gate output, not a claim of success.
 - For Flow B, the parent issue and each sub-issue with its state and its blockers.
 
-Write the reply clean as you draft it, then call the Skill tool with `shelly-stack:unslop` on it, per shelly-mode. No long dashes, no colon-as-connector, short declarative sentences.
+Write the reply clean as you draft it, then load the `unslop` skill on it, per shelly-mode. No long dashes, no colon-as-connector, short declarative sentences.

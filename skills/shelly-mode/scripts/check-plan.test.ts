@@ -20,7 +20,7 @@ ${rule}
 ### PR mechanics
 ### Verdict and merge
 ### Boot recipe
-\`git show origin/main:\` installed /loop 1h status message
+\`git show origin/main:\` installed every 1h status message
 
 ## PR 1
 **Depends on.** None.

@@ -18,10 +18,10 @@ A prompt states the goal and the check for done. The playbook supplies the steps
 
 ## Load the context first
 
-- For a noisy report, ask the agent to restate the issue in its own words and in plain English before it does anything else (`/in-your-own-words`). A misreading shows up before any code exists.
-- In a fresh chat, `/recall` earlier work on the topic. Old chats hold context the new agent lacks.
-- Before a change to unfamiliar code, ask `/how` for the mechanics and `/why` for the reasons. An agent with no traced model fixes the symptom at the first plausible spot.
-- Ask `/teach` to make the case for a choice, as in "convince me it fixes the cause and not the symptom". A case is easier to check than a summary.
+- For a noisy report, ask the agent to restate the issue in its own words and in plain English before it does anything else (the `in-your-own-words` skill). A misreading shows up before any code exists.
+- In a fresh chat, ask `recall` for earlier work on the topic. Old chats hold context the new agent lacks.
+- Before a change to unfamiliar code, ask `how` for the mechanics and `why` for the reasons. An agent with no traced model fixes the symptom at the first plausible spot.
+- Ask `teach` to make the case for a choice, as in "convince me it fixes the cause and not the symptom". A case is easier to check than a summary.
 
 ## Design before the plan
 
@@ -38,7 +38,7 @@ A prompt states the goal and the check for done. The playbook supplies the steps
 ## Before stepping away
 
 - Say "im going to bed" or "im stepping away" so the agent stops asking.
-- Write done as checks every round can run, and give `/loop` that check.
+- Write done as checks every round can run, and tell the agent to keep going until that check passes.
 - Ask for a fresh worktree off a named base.
 - Answer ahead of time what the agent would stop for, such as "don't ask me before committing".
 - Ask for a decision log to audit later.

@@ -7,7 +7,7 @@ description: "Use for \"how does X work\", code walkthroughs before changing som
 
 Explore the codebase to answer "how does X work?" questions. Produce architectural explanations at the level of a senior engineer onboarding onto a subsystem, enough to build a working mental model, not so much that it reads like annotated source code.
 
-Every spawn is an Agent subagent with `subagent_type: general-purpose` and a read-only posture stated in its prompt. Explorers use the `how explorer` line in `~/.claude/rules/shelly-stack-models.md` (default `sonnet`), and every explainer uses the `how explainer` line (default `fable`). Set `model` to that line's value, or to the default if the rule or the line is missing. Omit `model` when the value is `inherit`. If a value fails to resolve, use the default and say so. A configured value is either an Agent `model` alias (`fable`, `opus`, `sonnet`, `haiku`) or a pinned agent name such as `shelly-stack:shelly-opus-high`. An agent name goes in `subagent_type` with `model` omitted, in place of `general-purpose`.
+Every spawn is a helper with the reader brief, read-only per `<SHELLY_ROOT>/references/runtime.md`. Explorers use the `how explorer` role and every explainer uses the `how explainer` role, resolved per `<SHELLY_ROOT>/references/runtime.md`. If a value is unavailable, say so and ask the user.
 
 ## 1. Assess complexity
 

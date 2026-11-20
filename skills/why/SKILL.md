@@ -7,9 +7,9 @@ description: "Use for 'why does X work this way', 'why we picked Y', design rati
 
 Investigate the motivation and intent behind code. The companion `how` skill answers what the code does and how it works. `why` answers what forces led to its shape.
 
-Each spawn below names a role line in `~/.claude/rules/shelly-stack-models.md` and a default. Set `model` to that line's value, or to the default if the rule or the line is missing. Omit `model` when the value is `inherit`. If a value fails to resolve, use the default and say so. A configured value is either an Agent `model` alias (`fable`, `opus`, `sonnet`, `haiku`) or a pinned agent name such as `shelly-stack:shelly-opus-high`. An agent name goes in `subagent_type` with `model` omitted, in place of `general-purpose`.
+Each spawn below names a role line in `~/.config/shelly-stack/models.md`. Resolve it per `<SHELLY_ROOT>/references/runtime.md`. If a value is unavailable, say so and ask the user.
 
-Every spawn is an Agent subagent with `subagent_type: general-purpose` and keeps every tool, MCPs included. MCP access powers the MCP-backed investigators and the synthesizer's citation spot-checks. Investigators still shouldn't write anything. That is a posture stated in the prompt, not a sandbox.
+Every spawn is a helper with the delegate brief and keeps every tool, MCPs included. MCP access powers the MCP-backed investigators and the synthesizer's citation spot-checks. Investigators still shouldn't write anything. That is a posture stated in the prompt, not a sandbox.
 
 ## Operating Posture
 
@@ -45,7 +45,7 @@ Map each available MCP to one evidence category:
 
 Source control is always available through git and `gh`. For the other six, classify using the MCP name, server instructions, tool names, and resource descriptors. If an MCP could fit more than one category, choose the one matching its primary evidence. Record ambiguous cases in the coverage map.
 
-Spawn one investigator per category that has a matching MCP, all in a single message so they run concurrently, each owning exactly one tool or MCP. Don't ask one agent to cover multiple MCPs. `model`: the `why investigators` line, default `sonnet`.
+Spawn one investigator per category that has a matching MCP, all in one turn so they run concurrently, each owning exactly one tool or MCP. Don't ask one agent to cover multiple MCPs. Role: `why investigators`.
 
 Each investigator's prompt is `references/investigator-prompt.md` filled in, plus:
 - the category playbook `references/sources/<source>.md` for the selected MCP, adapted from the examples in `references/source-playbook.md`
@@ -75,7 +75,7 @@ If your scope assessment suggests a single-commit trivial target where the PR de
 
 ## Step 4. Synthesize
 
-Spawn one synthesizer. `model`: the `why synthesizer` line, default `fable`. It gets:
+Spawn one synthesizer. Role: `why synthesizer`. It gets:
 1. The investigator findings, including any null results and any categories skipped with justification
 2. The code anchor
 3. The user's original question

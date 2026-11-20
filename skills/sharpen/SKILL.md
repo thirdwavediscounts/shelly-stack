@@ -1,6 +1,6 @@
 ---
 name: sharpen
-description: "Make a task deeper, not bigger, then rewrite the prompt. Returns the rewritten prompt and does not do the task. Use for /sharpen, or when the user asks to sharpen or deepen a prompt before sending it."
+description: "Make a task deeper, not bigger, then rewrite the prompt. Returns the rewritten prompt and does not do the task. Use when the user asks to sharpen or deepen a prompt before sending it."
 ---
 
 I want a deeper version of this task, not a bigger one. Before rewriting it, do four things:
