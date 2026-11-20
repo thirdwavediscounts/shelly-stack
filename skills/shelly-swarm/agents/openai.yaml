@@ -1,0 +1,5 @@
+interface:
+  display_name: Shelly Swarm
+  short_description: Use the Shelly Swarm workflow in Codex
+policy:
+  allow_implicit_invocation: false
