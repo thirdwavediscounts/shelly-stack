@@ -53,7 +53,9 @@ Pick the first path that fits:
 ### Read-only helpers and reviewers
 
 - An enforced read-only helper is one the client sandboxes: Claude Code agents restricted to read tools, Antigravity `invoke_subagent` with `TypeName: "research"` or `define_subagent` with write tools off, a Codex read-only sandbox.
-- `delegate_task` has no read-only mode. For a reviewer on another provider, spawn it with `isolation: "worktree"`. When it returns, run `git -C <its worktree> status --porcelain` and `git -C <its worktree> log <base>..HEAD`. Both must be empty. If either is not, discard its output, report the breach, and remove that worktree.
+- `delegate_task` has no read-only mode. For a reviewer on another provider, spawn it with `isolation: "worktree"`. The worktree is a checkout of the T3 project the thread belongs to. For a repo outside that project, pass that repo's T3 project in `target.projectId` (find it with `t3_project_list`). If the repo has no T3 project, the reviewer cannot be isolated. Say so and ask the user.
+- Before the spawn, record the real checkout's `git rev-parse HEAD`, `git branch --show-current`, and `git status --porcelain`. Tell the reviewer to work only in its own worktree and to leave untracked repro files there, never commits or edits to tracked files.
+- When it returns, find its worktree with `t3_worktree_list` for the child's thread. Run `git -C <its worktree> status --porcelain --untracked-files=no` and `git -C <its worktree> log <base>..HEAD`. Both must be empty. Then rerun the three reads on the real checkout. They must match what you recorded. If anything differs, discard the review, report the breach, and restore or remove what it changed.
 - `isolation: "worktree"` starts from the parent's last commit, so uncommitted edits are missing. Commit the work to a local branch first (a `sean/*` or scratch branch, not pushed), then spawn. Never create a helper's checkout by hand in the shell.
 - Never call a writable helper read-only because its brief says so.
 

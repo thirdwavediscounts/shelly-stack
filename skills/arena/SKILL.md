@@ -5,7 +5,7 @@ description: "Spawn N parallel candidates at the same task, pick a base, graft t
 
 # Arena
 
-Open a todolist with one entry per phase (Frame, Fan out, Cross-judge, Pick, Graft, Verify) before launching anything.
+Open the task list (per `<SHELLY_ROOT>/references/runtime.md`) with one entry per phase (Frame, Fan out, Cross-judge, Pick, Graft, Verify) before launching anything.
 
 ## Phase A: Frame
 
