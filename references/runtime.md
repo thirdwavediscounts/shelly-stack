@@ -41,6 +41,7 @@ Pick the first path that fits:
 
 1. **T3 Code `delegate_task`.** Use it for another provider's model, any option the parent does not have, a separate checkout (`isolation: "worktree"`), and every background helper. Pass `target: {providerInstanceId, model, options}` from the role value, `role` (`implementation`, `research`, `review`, `design`, `test`, `general`), `mode: "async"`, and a short `title`. Keep the returned `taskId`.
 2. **The client's own subagent tool** (Claude Code `Agent`, Codex `spawn_agent`, Antigravity `invoke_subagent`). Use it when the helper runs on the parent's own provider and model with no extra options, and for read-only helpers when the client can enforce read-only (see below).
+   - Claude Code without `delegate_task` (outside T3 Code): a `claudeAgent/<model>` value runs as `Agent` with `model` set to the model's short name (`opus`, `sonnet`, `haiku`, `fable`). Its effort options cannot be set there; the helper runs at the session's effort. A `codex/...` value runs as `Agent` with `subagent_type: "codex:codex-rescue"` when that plugin is installed, on the model set in `~/.codex/config.toml`. An `antigravity/...` value is unavailable there. Say so.
 3. **No spawn tool.** Do the step yourself in sequence and say the step ran without an independent helper.
 
 ### Waiting

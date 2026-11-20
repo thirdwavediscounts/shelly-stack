@@ -8,16 +8,15 @@ This package runs on any model in any client that can read files and run a shell
 
 ## Install
 
-Link each skill folder into your client's global skills folder. Set `SHELLY_ROOT` to this checkout.
+This one folder is a plugin for Claude Code, Codex, and Antigravity (Gemini). Set `SHELLY_ROOT` to this checkout.
 
 ```bash
 SHELLY_ROOT=/absolute/path/to/shelly-stack
-SKILLS_DIR="$HOME/.agents/skills"   # pick the folder for your client below
-mkdir -p "$SKILLS_DIR"
-for d in "$SHELLY_ROOT"/skills/*/; do ln -sfn "${d%/}" "$SKILLS_DIR/$(basename "$d")"; done
 ```
 
-- Antigravity (Gemini): skip the loop. The repo root is an Antigravity plugin (`plugin.json`), so link it once into the plugins folder of each config root. Standalone Antigravity reads `$HOME/.gemini/config/`. T3 Code runs Antigravity with its own root, `$HOME/.t3/userdata/providers/antigravity/<id>/config/`.
+- Claude Code: `claude plugin marketplace add "$SHELLY_ROOT"`, then `claude plugin install shelly-stack@shelly-stack`. Or from GitHub: `/plugin install shelly-stack --marketplace thirdwavediscounts/shelly-stack`. The plugin also runs four hooks from `hooks/claude-hooks.json`: a destructive-SQL guard, its one-time approval, a status-line check, and a prompt list after compaction.
+- Codex: `codex plugin marketplace add "$SHELLY_ROOT"`, then `codex plugin add shelly-stack@shelly-stack`.
+- Antigravity (Gemini): the repo root is an Antigravity plugin (`plugin.json`). Link it once into the plugins folder of each config root. Standalone Antigravity reads `$HOME/.gemini/config/`. T3 Code runs Antigravity with its own root, `$HOME/.t3/userdata/providers/antigravity/<id>/config/`.
 
 ```bash
 for root in "$HOME/.gemini/config" "$HOME"/.t3/userdata/providers/antigravity/*/config; do
@@ -25,10 +24,15 @@ for root in "$HOME/.gemini/config" "$HOME"/.t3/userdata/providers/antigravity/*/
 done
 ```
 
-- Codex: `$HOME/.agents/skills/`.
-- Claude: `$HOME/.claude/skills/`.
+- Any other client: link each skill folder into its global skills folder.
 
-Claude and Codex users can use the client-specific plugins `shelly-stack-claude` and `shelly-stack-codex` instead. Do not install a plugin and these links together. Both register the same skill names.
+```bash
+SKILLS_DIR="$HOME/.agents/skills"
+mkdir -p "$SKILLS_DIR"
+for d in "$SHELLY_ROOT"/skills/*/; do ln -sfn "${d%/}" "$SKILLS_DIR/$(basename "$d")"; done
+```
+
+Use one install per client. A plugin and skill links together register the same skill names twice.
 
 ## Get started
 

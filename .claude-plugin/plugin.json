@@ -1,0 +1,12 @@
+{
+  "name": "shelly-stack",
+  "description": "Agent workflows, principles, and review panels for any model. Sean's fork of poteto's pstack for Third Wave Discounts.",
+  "version": "0.36.0",
+  "author": {
+    "name": "Sean, Third Wave Discounts"
+  },
+  "homepage": "https://github.com/thirdwavediscounts/shelly-stack",
+  "repository": "https://github.com/thirdwavediscounts/shelly-stack",
+  "license": "MIT",
+  "hooks": "./hooks/claude-hooks.json"
+}
