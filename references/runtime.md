@@ -31,7 +31,7 @@ Skills name a role, never a model. Roles: `feature, refactoring`, `bug-fix`, `pe
 
 1. Read `~/.config/shelly-stack/models.md`. Each line is `<role>: <value>`. A value is `inherit` (the parent's provider and model) or `<provider>/<model>` followed by optional `key=value` options, for example `claudeAgent/claude-opus-5-5 effort=high`. Panel roles hold a comma-separated list, and one helper runs per entry.
 2. A role with no line, or no file, uses `inherit`.
-3. Before the first cross-provider spawn in a thread, call `orchestrator_capabilities` once. A value whose provider or model is not in the catalog is unavailable. Say so and ask the user. Never switch provider or model on your own.
+3. Before the first `delegate_task` in a thread, call `orchestrator_capabilities` once. Its catalog also names each model's effort option for step 5. A value whose provider or model is not in the catalog is unavailable. Say so and ask the user. Never switch provider or model on your own.
 4. Before a fan-out, list each stage and its role value in your reply so the user can stop it before spend.
 5. Effort: start from the role's value. Raise it one step for the hardest work, lower it for routine work. Pass it in the provider's option (the option id `orchestrator_capabilities` lists for that model, such as `effort`, `reasoningEffort`, or `thought_level`).
 
@@ -54,7 +54,7 @@ Pick the first path that fits:
 ### Read-only helpers and reviewers
 
 - An enforced read-only helper is one the client sandboxes: Antigravity `invoke_subagent` with `TypeName: "research"` or `define_subagent` with write tools off, a Codex read-only sandbox.
-- Claude Code has no enforced read-only helper. `Explore` and `Plan` have no edit or write tools but keep the shell. Use them for read-only questions. For a reviewer, use `Agent` with `isolation: "worktree"` and run the checks below on its worktree.
+- Claude Code has no enforced read-only helper: `Explore` and `Plan` lack edit tools but keep the shell. Treat every Claude Code helper as writable. For a reviewer, use `Agent` with `isolation: "worktree"` and run the checks below on its worktree.
 - `delegate_task` has no read-only mode. For a reviewer on another provider, spawn it with `isolation: "worktree"`. The worktree is a checkout of the T3 project the thread belongs to. For a repo outside that project, `delegate_task` cannot isolate the reviewer. Say so and ask the user.
 - Before the spawn, record the real checkout's `git rev-parse HEAD`, `git branch --show-current`, and `git status --porcelain`. Tell the reviewer to work only in its own worktree and to leave untracked repro files there, never commits or edits to tracked files.
 - When it returns, find its worktree with `t3_worktree_list` for the child's thread. Run `git -C <its worktree> status --porcelain --untracked-files=no` and `git -C <its worktree> log <base>..HEAD`. Both must be empty. Then rerun the three reads on the real checkout. They must match what you recorded. If anything differs, discard the review, report the breach, and restore or remove what it changed.
