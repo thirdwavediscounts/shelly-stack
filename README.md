@@ -12,12 +12,19 @@ Link each skill folder into your client's global skills folder. Set `SHELLY_ROOT
 
 ```bash
 SHELLY_ROOT=/absolute/path/to/shelly-stack
-SKILLS_DIR="$HOME/.gemini/config/skills"   # pick the folder for your client below
+SKILLS_DIR="$HOME/.agents/skills"   # pick the folder for your client below
 mkdir -p "$SKILLS_DIR"
 for d in "$SHELLY_ROOT"/skills/*/; do ln -sfn "${d%/}" "$SKILLS_DIR/$(basename "$d")"; done
 ```
 
-- Antigravity (Gemini): `$HOME/.gemini/config/skills/`. Antigravity discovers global skills there.
+- Antigravity (Gemini): skip the loop. The repo root is an Antigravity plugin (`plugin.json`), so link it once into the plugins folder of each config root. Standalone Antigravity reads `$HOME/.gemini/config/`. T3 Code runs Antigravity with its own root, `$HOME/.t3/userdata/providers/antigravity/<id>/config/`.
+
+```bash
+for root in "$HOME/.gemini/config" "$HOME"/.t3/userdata/providers/antigravity/*/config; do
+  mkdir -p "$root/plugins" && ln -sfn "$SHELLY_ROOT" "$root/plugins/shelly-stack"
+done
+```
+
 - Codex: `$HOME/.agents/skills/`.
 - Claude: `$HOME/.claude/skills/`.
 
