@@ -9,7 +9,7 @@ shelly-stack bundles this skill because most clients have no built-in. It sets t
 
 ## Placement
 
-- Project skill: `.claude/skills/<name>/SKILL.md`. Committed, shared with the team.
+- Project skill: `.agents/skills/<name>/SKILL.md`. Committed, shared with the team. Codex and Antigravity read that folder. A client that reads only its own folder (such as `.claude/skills/`) gets a link to it.
 - Personal skill: the client's personal skills folder, in a `<name>/SKILL.md` folder. Just you, every project.
 - Plugin skill: `<plugin>/skills/<name>/SKILL.md`. Ships with the plugin.
 

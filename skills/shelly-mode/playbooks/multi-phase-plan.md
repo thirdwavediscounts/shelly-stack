@@ -53,8 +53,8 @@ Tests alone are not sufficient verification. A PR is verified only when its unit
 
 ### PR mechanics, for every PR
 
-- [ ] Resolve the forge once. Use the PR tools in `<SHELLY_ROOT>/references/runtime.md`, with `gh` as the fallback. Record any fallback to `gh`. Never require `gt`.
-- [ ] Open the PR ready, never draft, with the base set to `<base-branch>` (`gh pr create --base <base-branch>` on the fallback), and `draft: false`. A stack child targets its parent branch.
+- [ ] Resolve the forge once. Use the client's PR tools in `<SHELLY_ROOT>/references/runtime.md` when it has them. Otherwise, if `command -v origin` succeeds and Origin can resolve the repository, use `origin pr` for every PR operation. Otherwise use `gh`. Record any fallback to `gh`. Never require `gt`.
+- [ ] Open the PR ready, never draft, with the base set to `<base-branch>` (`origin pr create --status open --base <base-branch>` on Origin, `gh pr create --base <base-branch>` on `gh`), and `draft: false`. A stack child targets its parent branch.
 - [ ] Run the repo's lint and typecheck once before the PR-facing push. Push with hooks on.
 - [ ] Run **Opening a PR** steps 1 to 5 before each push. Steps 2 and 3 load the `unslop` and `no-comments` skills.
 - [ ] Run a code review at medium effort on the PR branch. Triage every finding and every security-reviewer comment per `../references/bugbot-triage.md`.
