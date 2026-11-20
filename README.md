@@ -81,13 +81,19 @@ shelly-mode matches the task to a playbook and posts its steps as a checklist. I
 - When agents keep making the same mistake, ask for the [`correct`](./skills/correct/SKILL.md) skill. It fixes the repo so the mistake cannot come back.
 - To change models or budget, run [`setup-shelly-stack`](./skills/setup-shelly-stack/SKILL.md) again.
 
+## Claude Code cloud sessions
+
+Cloud sessions do not carry over local `~/.claude`. The cloud environment's setup script clones this repo and runs `cloud/install.sh`. It installs the production Supabase guard, the stale-checkout warning, the tailnet join for `ssh twd`, the app env files from Infisical, and the Postgres tunnel over `ssh twd`.
+
 ## Checks
 
 ```bash
 python3 tests/check_agnostic.py
+python3 hooks/test_hooks.py
+node --test cloud/prod-db-guard.test.mjs
 ```
 
-It fails when a skill or reference names one client's tools, agent types, models, or config paths.
+The first fails when a skill or reference names one client's tools, agent types, models, or config paths.
 
 ## License
 
