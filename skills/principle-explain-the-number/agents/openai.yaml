@@ -1,0 +1,5 @@
+interface:
+  display_name: Principle Explain The Number
+  short_description: Use the Principle Explain The Number workflow in Codex
+policy:
+  allow_implicit_invocation: false
