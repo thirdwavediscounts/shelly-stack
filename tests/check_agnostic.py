@@ -1,6 +1,6 @@
 """Fail when a skill or reference names one client's tools, agent types, models, or paths.
 
-references/runtime.md maps client tools and README.md gives per-client install steps, so both may name clients.
+references/runtime.md maps client tools, README.md gives per-client install steps, and agents/shelly-agent.md is a client agent file, so all three may name clients. evals/ holds Claude Code eval cases and is skipped.
 """
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-ALLOWED = {ROOT / "references/runtime.md", ROOT / "README.md"}
+ALLOWED = {ROOT / "references/runtime.md", ROOT / "README.md", ROOT / "agents/shelly-agent.md"}
 BANNED = [
     (r"subagent_type", "agent type: name a role and a brief instead"),
     (r"\bSkill tool\b|`Skill`", "Skill tool: say 'load the <name> skill'"),
@@ -33,7 +33,7 @@ BANNED = [
 def main() -> int:
     bad = 0
     for path in sorted(ROOT.rglob("*.md")):
-        if path in ALLOWED or ".git" in path.parts:
+        if path in ALLOWED or ".git" in path.parts or path.relative_to(ROOT).parts[0] == "evals":
             continue
         for n, line in enumerate(path.read_text(errors="ignore").splitlines(), 1):
             if "http://" in line or "https://" in line:
