@@ -1,6 +1,6 @@
 ---
 name: unslop
-description: Cut AI tells from any writing. Must always apply.
+description: "Cut AI tells from prose before it ships: replies, docs, PR text, commit bodies, and Linear text. Use when drafting or reviewing any of these."
 ---
 
 # Unslop
