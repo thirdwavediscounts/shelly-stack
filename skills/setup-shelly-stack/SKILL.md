@@ -11,17 +11,9 @@ Write `~/.config/shelly-stack/models.md`. Every shelly-stack skill reads it to p
 
 ### 1. Detect available models
 
-Call T3 Code's `orchestrator_capabilities` with no arguments. It returns:
+Find your app in `<SHELLY_ROOT>/references/runtime.md` ("Find your app"). Follow the **Models** line in its section to list the `<provider>/<model>` pairs it can run and each model's effort option and values. That list is the catalog. Use the option names and values it gives, never a guess.
 
-- the parent's own provider, model, and options (`inheritedProviderInstanceId`, `inheritedModel`, `inheritedOptions`);
-- each provider's `providerInstanceId`, whether it can run a child task (`canRunChildTask`, `canRunCrossProviderChildTask`), and its `constraints`;
-- each model's `id` and its options, each with the allowed `values`.
-
-Keep only providers that can run a child task and list no constraint such as "disabled". The catalog is this list of `<providerInstanceId>/<model id>` pairs with their options. A short list may omit models (`omittedModels`). When the user names a model that is not shown, call `orchestrator_capabilities` again with `search` set to that name.
-
-Find each model's effort option in the catalog. Its name differs by provider, for example `effort`, `reasoningEffort`, or `thought_level`. Use the name and values the catalog lists, never a guess.
-
-If `orchestrator_capabilities` does not exist, list the models the client's own subagent tool accepts. If you cannot list them, ask the user to paste the models and effort levels they have. Never write a value you have not confirmed. `inherit` is always valid.
+If your app's section has no **Models** line, only `inherit` is available. If you cannot list the models, ask the user to paste the models and effort levels they have. Never write a value you have not confirmed. `inherit` is always valid.
 
 ### 2. Load current state
 

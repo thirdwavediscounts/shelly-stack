@@ -9,7 +9,7 @@ shelly-stack runs on any model in any client that can read files and run a shell
 - **Principles** (`principle-*`) are always read as files, never called as tools.
 - **The task list** is the client's todo or plan tool. With none, post the steps as a `- [ ]` checklist in your reply and update it when a step's state changes.
 - **Ask the user** means the client's question tool. With none, ask in your reply and end the turn.
-- **A secret** comes from the client's secret request tool when one exists (T3 Code: `request_secret`). Otherwise follow the repository's instructions (for example `op run` or `op read`). Never ask for a secret in chat.
+- **A secret** comes from the client's secret request tool when one exists. Otherwise follow the repository's instructions (for example `op run` or `op read`). Never ask for a secret in chat.
 
 ## Helpers (subagents)
 
@@ -29,36 +29,82 @@ Write the brief as: the absolute path of the brief file to read first, `<SHELLY_
 
 Skills name a role, never a model. Roles: `feature, refactoring`, `bug-fix`, `perf-issue`, `hillclimb`, `judgment and prose`, `hardest tasks`, `how explorer`, `how explainer`, `why investigators`, `why synthesizer`, `reflect tooling`, `reflect judgment, divergent, synthesizer`, `arena runners`, `arena cross-judge pool`, `swarm workers`, `architect runners`, `interrogate reviewers`, `reader`.
 
-1. Read `~/.config/shelly-stack/models.md`. Each line is `<role>: <value>`. A value is `inherit` (the parent's provider and model) or `<provider>/<model>` followed by optional `key=value` options, for example `claudeAgent/claude-opus-5-5 effort=high`. Panel roles hold a comma-separated list, and one helper runs per entry.
+1. Read `~/.config/shelly-stack/models.md`. Each line is `<role>: <value>`. A value is `inherit` (the parent's provider and model) or `<provider>/<model>` followed by optional `key=value` options, for example `claudeAgent/claude-opus-5-5 effort=high` or `codex/gpt-6.2-sol reasoningEffort=xhigh`. Panel roles hold a comma-separated list, and one helper runs per entry.
 2. A role with no line, or no file, uses `inherit`.
-3. Before the first `delegate_task` in a thread, call `orchestrator_capabilities` once. Its catalog also names each model's effort option for step 5. A value whose provider or model is not in the catalog is unavailable. Say so and ask the user. Never switch provider or model on your own.
+3. A value your app cannot run is unavailable. Say so and ask the user. Never switch provider or model on your own.
 4. Before a fan-out, list each stage and its role value in your reply so the user can stop it before spend.
-5. Effort: start from the role's value. Raise it one step for the hardest work, lower it for routine work. Pass it in the provider's option (the option id `orchestrator_capabilities` lists for that model, such as `effort`, `reasoningEffort`, or `thought_level`).
+5. Effort: start from the role's value. Raise it one step for the hardest work, lower it for routine work. Pass it the way your app's section below says.
 
-### Spawning
+## Find your app
 
-Pick the first path that fits:
+Check in this order. Use the first that matches, and only its section.
 
-1. **T3 Code `delegate_task`.** Use it for another provider's model, any option the parent does not have, a separate checkout (`isolation: "worktree"`), and every background helper. Pass `target: {providerInstanceId, model, options}` from the role value, `role` (`implementation`, `research`, `review`, `design`, `test`, `general`), `mode: "async"`, and a short `title`. Keep the returned `taskId`.
-2. **The client's own subagent tool** (Claude Code `Agent`, Codex `spawn_agent`, Antigravity `invoke_subagent`). Use it when the helper runs on the parent's own provider and model with no extra options, and for read-only helpers when the client can enforce read-only (see below).
-   - Claude Code without `delegate_task` (outside T3 Code): a `claudeAgent/<model>` value runs as `Agent` with `model` set to the model's short name (`opus`, `sonnet`, `haiku`, `fable`). Pass the value's effort option as the `Agent` tool's `effort`. A `codex/...` value runs as `Agent` with `subagent_type: "codex:codex-rescue"` when that plugin is installed, on the model set in `~/.codex/config.toml`. An `antigravity/...` value is unavailable there. Say so.
-3. **No spawn tool.** Do the step yourself in sequence and say the step ran without an independent helper.
+1. **T3 Code:** you have a `delegate_task` tool.
+2. **Orca:** your shell has `ORCA_TERMINAL_HANDLE` set (`printenv ORCA_TERMINAL_HANDLE`). Orca sets it in every terminal it runs, and its worker commands need it.
+3. **Claude Code** (CLI or desktop): you have an `Agent` tool.
+4. **Codex:** you have a `spawn_agent` tool.
+5. **Antigravity (Gemini):** you have an `invoke_subagent` tool.
+6. **None of these:** do each helper step yourself, in order, and say it ran without an independent helper.
+
+Every app follows the shared rules after these sections.
+
+### T3 Code
+
+- **Models.** Before the first `delegate_task` in a thread, call `orchestrator_capabilities` once. Keep providers whose `canRunChildTask` is true and that list no constraint such as "disabled". Each pair is `<providerInstanceId>/<model id>`, with the model's options and allowed `values`. The effort option is named per model (`effort`, `reasoningEffort`, or `thought_level`). If a model the user names is missing (`omittedModels`), call it again with `search` set to that name. A value not in the catalog is unavailable.
+- **Start a helper.** `delegate_task` with `target: {providerInstanceId, model, options}` from the role value, `role` (`implementation`, `research`, `review`, `design`, `test`, or `general`), `mode: "async"`, and a short `title`. Add `isolation: "worktree"` for a helper that writes or reviews. Keep the returned `taskId`.
+- **Wait and stop.** Read the result with `task_status` when the helper wakes you. Stop one with `task_cancel`.
+- **Read-only.** `delegate_task` has no read-only mode. Spawn reviewers with `isolation: "worktree"` and check them per the shared rules. Find the reviewer's worktree with `t3_worktree_list`. For a repo outside the thread's T3 project it cannot isolate a reviewer. Say so and ask the user.
+- **Other tools.** Secrets: `request_secret`. PRs and CI: `pull_request_read`, `pull_request_create`, `pull_request_update`, `pull_request_review`, `pull_request_respond`, `pull_request_merge`, `ci_logs`, `ci_rerun`, `watch_pull_request`. Recurring checks: `schedule_task`. History: `t3_thread_search`, `t3_thread_read`, `t3_thread_list`. Showing the user something mid-turn: `send_to_user`.
+
+### Orca
+
+- **Models.** Orca starts the `claude`, `codex`, and `gemini` agents. Use `claudeAgent/<claude model id>` with `effort` (`low`, `medium`, `high`, `xhigh`, `max`), `codex/<slug>` from `.models[].slug` in `~/.codex/models_cache.json` with `reasoningEffort`, and `antigravity/<model>` for Gemini. Leave out an agent whose CLI is not installed (`command -v claude codex gemini`).
+- **Load Orca's guide once.** Run `orca skills get orchestration` and follow it for every command below. Use `$ORCA_CLI_COMMAND` in place of `orca` when it is set.
+- **Start a helper.** Write the brief to a file. Run `orca orchestration worker-start --environment local --spec-file <brief file> --agent <agent> --model <model> --effort <effort> --worktree <where> --task-title "<title>"`. The agent comes from the role value's provider: `claudeAgent` is `claude`, `codex` is `codex`, `antigravity` is `gemini`. `inherit` is the agent you run as, with no `--model`. Use `--worktree new-child --name <short-name>` for a helper that writes or reviews, and `--worktree current` for a reader. Start up to four at once, then end your turn.
+- **Wait and stop.** Orca wakes you with each worker's report. Read recent output with `orca orchestration worker-read --dispatch <id>`. Steer with `orca orchestration send --to dispatch:<id>`. Never poll or read a worker's terminal.
+- **Read-only.** Orca has no read-only mode. Spawn reviewers in a `new-child` worktree and check them per the shared rules.
+- **Other tools.** PRs and CI: `gh`. History: `orca search`. Linear: the `orca-linear` skill.
+
+### Claude Code
+
+- **Models.** The catalog is `claudeAgent/<model id>` for the Claude models (`claude-opus-5-5`, `claude-sonnet-5-5`, `claude-haiku-5-5`, `claude-fable-5-2`) with `effort` (`low`, `medium`, `high`, `xhigh`, `max`), plus `codex/<slug>` from `.models[].slug` in `~/.codex/models_cache.json` with `reasoningEffort` when the Codex companion below exists. A `claudeAgent/<model>` value runs on the `Agent` tool with `model` set to the short name in the model id (`opus`, `sonnet`, `haiku`, `fable`). Pass the value's effort option as the `Agent` tool's `effort`. `inherit` omits both.
+- **Start a helper.** A delegate is `Agent` with `subagent_type: "shelly-stack:shelly-agent"`, `run_in_background: true`, and the brief as `prompt`. A reader is `Agent` with `subagent_type: "Explore"`. Add `isolation: "worktree"` for a helper that writes in parallel with others or reviews.
+- **Codex seats.** A `codex/<model>` value runs through the Codex plugin's companion script, not the `Agent` tool:
+  1. Find it: `ls ~/.claude/plugins/cache/openai-codex/codex/*/scripts/codex-companion.mjs | sort -V | tail -1`. If none exists, the value is unavailable.
+  2. Write the full brief to a file.
+  3. Run `node <script> task --fresh --model <model> --effort <effort> --cwd <seat folder> --prompt-file <brief file>` with the Bash tool's `run_in_background: true`. Effort is one of `none`, `minimal`, `low`, `medium`, `high`, `xhigh`. Add `--write` for a seat that edits files in its own worktree. Leave it out for a reviewer or judge, which then runs in Codex's read-only sandbox.
+  4. When it ends, its stdout is the reply. A nonzero exit or empty reply drops the seat. Name the reason from the first line of output and go on with the other seats.
+- **Other providers.** An `antigravity/...` value is unavailable. Say so.
+- **Wait and stop.** Background helpers wake you when done. Stop one with `TaskStop`. The `Workflow` tool runs only when the user asked for a workflow.
+- **Read-only.** No Claude helper is read-only: `Explore` and `Plan` lack edit tools but keep the shell. Spawn reviewers with `isolation: "worktree"` and check them per the shared rules. Codex seats without `--write` are read-only.
+- **Other tools.** Ask the user: `AskUserQuestion`. Task list: the todo tool. PRs and CI: `gh`. History: read only this workspace's `~/.claude/projects/<slug>/` folder, where every character of the absolute workspace path that is not a letter, digit, or `-` becomes `-`.
+
+### Codex
+
+- **Start a helper.** `spawn_agent` with the brief. It runs on your own model. Another provider's value is unavailable. Say so.
+- **Read-only.** Spawn reviewers in Codex's read-only sandbox.
+- **Other tools.** PRs and CI: `gh`.
+
+### Antigravity (Gemini)
+
+- **Start a helper.** `invoke_subagent` with the brief. It runs on your own model. Another provider's value is unavailable. Say so.
+- **Read-only.** `invoke_subagent` with `TypeName: "research"`, or `define_subagent` with write tools off.
+- **Other tools.** PRs and CI: `gh`.
+
+## Shared rules for helpers
 
 ### Waiting
 
-- Start helpers asynchronously, then continue other work. When none is left, end the turn. The helper's completion wakes you. Read the result then (`task_status` for `delegate_task`).
+- Start helpers asynchronously, then continue other work. When none is left, end the turn. The helper's completion wakes you.
 - Do not poll a running helper, sleep, loop in the shell, or schedule wakeups to wait for it.
-- Cancel a helper you no longer need with `task_cancel` (or the client's equivalent). Start no replacement unless the work still needs one.
-- A fan-out of N helpers is N async spawns in one turn. Cap N at the panel size or the skill's limit. The `Workflow` tool is used only when the user asked for a workflow.
+- Stop a helper you no longer need. Start no replacement unless the work still needs one.
+- A fan-out of N helpers is N async spawns in one turn. Cap N at the panel size or the skill's limit.
 
-### Read-only helpers and reviewers
+### Reviewers in a worktree
 
-- An enforced read-only helper is one the client sandboxes: Antigravity `invoke_subagent` with `TypeName: "research"` or `define_subagent` with write tools off, a Codex read-only sandbox.
-- Claude Code has no enforced read-only helper: `Explore` and `Plan` lack edit tools but keep the shell. Treat every Claude Code helper as writable. For a reviewer, use `Agent` with `isolation: "worktree"` and run the checks below on its worktree.
-- `delegate_task` has no read-only mode. For a reviewer on another provider, spawn it with `isolation: "worktree"`. The worktree is a checkout of the T3 project the thread belongs to. For a repo outside that project, `delegate_task` cannot isolate the reviewer. Say so and ask the user.
+- `isolation: "worktree"` and Orca's `new-child` start from the last commit, so uncommitted edits are missing. Commit the work to a local branch first (a `sean/*` or scratch branch, not pushed), then spawn. Never make a helper's checkout by hand.
 - Before the spawn, record the real checkout's `git rev-parse HEAD`, `git branch --show-current`, and `git status --porcelain`. Tell the reviewer to work only in its own worktree and to leave untracked repro files there, never commits or edits to tracked files.
-- When it returns, find its worktree with `t3_worktree_list` for the child's thread. Run `git -C <its worktree> status --porcelain --untracked-files=no` and `git -C <its worktree> log <base>..HEAD`. Both must be empty. Then rerun the three reads on the real checkout. They must match what you recorded. If anything differs, discard the review, report the breach, and restore or remove what it changed.
-- `isolation: "worktree"` starts from the parent's last commit, so uncommitted edits are missing. Commit the work to a local branch first (a `sean/*` or scratch branch, not pushed), then spawn. Never create a helper's checkout by hand in the shell.
+- When it returns, run `git -C <its worktree> status --porcelain --untracked-files=no` and `git -C <its worktree> log <base>..HEAD`. Both must be empty. Then rerun the three reads on the real checkout. They must match. If anything differs, discard the review, report the breach, and restore or remove what it changed.
 - Never call a writable helper read-only because its brief says so.
 
 ### Owning the result
@@ -67,10 +113,9 @@ You own every helper's work. Read its diff and write your own summary. A second 
 
 ## PRs, CI, and history
 
-- **PRs and CI.** Use the client's PR tools when they exist (T3 Code: `pull_request_read`, `pull_request_create`, `pull_request_update`, `pull_request_review`, `pull_request_respond`, `pull_request_merge`, `ci_logs`, `ci_rerun`, `watch_pull_request`). Otherwise use `gh` (`gh pr checks`, `gh run view --log-failed`). Resolve the PR head before and after you read checks. A stale result or an empty check set is not a pass.
-- **Waiting on CI.** With `watch_pull_request`, watch and end the turn. Without it, check once per turn with bounded commands. A recurring check needs a scheduling tool (T3 Code: `schedule_task`) and either an explicit request or a playbook step that arms one for work the user handed off (autonomous run, multi-phase plan, babysit, a long bug hunt).
-- **Earlier history.** Use the current conversation first. Then the client's thread tools (T3 Code: `t3_thread_search`, `t3_thread_read`, `t3_thread_list`). With none, use a transcript path the user gives. Never scan other projects' history.
-- **Showing the user something mid-turn.** Use the client's send tool when one exists (T3 Code: `send_to_user`).
+- **PRs and CI.** Use your app's PR tools when its section names them. Otherwise use `gh` (`gh pr checks`, `gh run view --log-failed`). Resolve the PR head before and after you read checks. A stale result or an empty check set is not a pass.
+- **Waiting on CI.** With a PR watch tool, watch and end the turn. Without one, check once per turn with bounded commands. A recurring check needs a scheduling tool and either an explicit request or a playbook step that arms one for work the user handed off (autonomous run, multi-phase plan, babysit, a long bug hunt).
+- **Earlier history.** Use the current conversation first. Then your app's history tool or folder. With none, use a transcript path the user gives. Never scan other projects' history.
 
 ## Authorization
 
