@@ -27,7 +27,7 @@ Before spawning investigators, build the seed context inline: file paths and lin
 
 ## Step 3. Spawn Parallel Investigators
 
-**Default to the full parallel investigation.** The goal is a complete coverage map, not a minimal one. Document the null, don't skip the search.
+Spawn an investigator for every category that has a matching MCP. The goal is a coverage map. An empty search is a finding, so record it rather than skip the search.
 
 ### Discovery
 
@@ -71,7 +71,7 @@ Only with an **explicit, written justification** that goes in the final Sources 
 - **No MCP is available for that category** in this environment. Flag it as a gap, not a choice: "Real-time team chat skipped. No matching MCP available, so the conversational record was not searchable."
 - **The source is provably irrelevant**, not just "probably irrelevant." A high bar: "Error / exception tracking skipped. Target is a build-time script with no runtime code path."
 
-If your scope assessment suggests a single-commit trivial target where the PR description already contains the complete answer, you may answer inline **only after** confirming all seven available category searches would be redundant. Say so explicitly. This should be rare.
+If a single-commit target's PR description fully answers the question, answer inline and list each category you did not search, with that reason, in Sources Consulted.
 
 ## Step 4. Synthesize
 
