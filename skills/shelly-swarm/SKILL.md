@@ -19,7 +19,7 @@ Open a todolist with one entry per phase before launching anything.
 1. State the done predicate and the artifact or report the swarm must return.
 2. Choose the shape. Partition into slices, race N workers on identical briefs, or mix both. For a race or mixed shape, declare `first pass`, `rank all`, or `best-of` before spawning.
 3. Set N from the user or derive it from the shape. N is total workers; size it for one machine. State the spawn ceiling, the total workers across every refill, up front.
-4. Pick the worker role value from the `swarm workers` line in `~/.config/shelly-stack/models.md`. If the file or that line is missing, use `inherit`. If a configured value is unavailable per `<SHELLY_ROOT>/references/runtime.md`, say so and ask the user. For a model race, name each arm's role value up front.
+4. Pick the worker role value from the `swarm workers` line in your models file (per `<SHELLY_ROOT>/references/runtime.md`). If neither file has that line, use `inherit`. If a configured value is unavailable per `<SHELLY_ROOT>/references/runtime.md`, say so and ask the user. For a model race, name each arm's role value up front.
 5. Give each worker its own writable output when it writes. When workers verify or measure commits, each brief names the exact SHAs. A measurement brief also names the method (sample count, what one sample is, order). The worker records both in its result.
 
 ## Phase B: Fan out

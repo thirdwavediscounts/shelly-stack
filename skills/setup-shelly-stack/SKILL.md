@@ -5,19 +5,19 @@ description: Configure which models shelly-stack uses per role and at what reaso
 
 # Setup shelly-stack
 
-Write `~/.config/shelly-stack/models.md`. Every shelly-stack skill reads it to pick the model for each role. `<SHELLY_ROOT>/references/runtime.md` (section "Roles and models") defines the format and how skills use it. Read that section first.
+Write the models file for the app you run in, `~/.config/shelly-stack/models-<app>.md`. Every shelly-stack skill reads it, then the shared `~/.config/shelly-stack/models.md`, to pick the model for each role. Run this skill once in each app whose models differ. `<SHELLY_ROOT>/references/runtime.md` (section "Roles and models") defines the format and how skills use it. Read that section first.
 
 ## Steps
 
 ### 1. Detect available models
 
-Find your app in `<SHELLY_ROOT>/references/runtime.md` ("Find your app"). Follow the **Models** line in its section to list the `<provider>/<model>` pairs it can run and each model's effort option and values. That list is the catalog. Use the option names and values it gives, never a guess.
+Find your app and its file name in `<SHELLY_ROOT>/references/runtime.md` ("Find your app"). With no matching app, write the shared `models.md` in place of `models-<app>.md` everywhere below. Follow the **Models** line in its section to list the `<provider>/<model>` pairs it can run and each model's effort option and values. That list is the catalog. Use the option names and values it gives, never a guess.
 
 If your app's section has no **Models** line, only `inherit` is available. If you cannot list the models, ask the user to paste the models and effort levels they have. Never write a value you have not confirmed. `inherit` is always valid.
 
 ### 2. Load current state
 
-If `~/.config/shelly-stack/models.md` exists, read it. Its `# budget` line and role values are the current choices. Otherwise start from the defaults in step 5. Drop any line whose role is not in step 5, such as `how critics`. It is from a retired role.
+If `~/.config/shelly-stack/models-<app>.md` exists, read it. Otherwise read the shared `~/.config/shelly-stack/models.md` if it exists. The file you read is the current state. Its `# budget` line and role values are the current choices. Otherwise start from the defaults in step 5. Drop any line whose role is not in step 5, such as `how critics`. It is from a retired role.
 
 ### 3. Budget, map, and confirm
 
@@ -48,7 +48,7 @@ If a value fails, stop and ask the user again.
 
 ### 5. Write the file
 
-Create `~/.config/shelly-stack/` if it is missing. Write `models.md` with the comment lines, a `# budget` line with the chosen label and its target effort, and one line per role. Overwrite the whole file so re-runs give the same result. Never put role lines in a repository's `AGENTS.md` or any other instructions file.
+Create `~/.config/shelly-stack/` if it is missing. Write `models-<app>.md` with the comment lines, a `# budget` line with the chosen label and its target effort, and one line per role. Overwrite the whole file so re-runs give the same result. Never put role lines in a repository's `AGENTS.md` or any other instructions file.
 
 The shape below shows the defaults. Every role defaults to `inherit`. The second block shows real values after the user picks models with the `large` budget.
 
@@ -85,7 +85,7 @@ arena runners: <providerA>/<model-1> effort=xhigh, <providerB>/<model-3> reasoni
 
 ### 6. Confirm
 
-Tell the user the file was written. Skills read it each time they spawn a helper, so it applies from the next spawn. Re-running this skill updates it.
+Tell the user which file was written and that it applies only in this app. Skills read it each time they spawn a helper, so it applies from the next spawn. Re-running this skill updates it.
 
 ### 7. Offer a verification skill (optional)
 

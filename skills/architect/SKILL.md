@@ -29,7 +29,7 @@ Skip Phase A only when the work is genuinely greenfield with no surrounding syst
 
 Run the **arena** skill with the design-sketch task and the Phase A grounding artifacts. Pass `references/runner-prompt.md` as each runner's prompt. Runners do not start in this skill's folder, so first rewrite every relative path in it as an absolute path from this skill's base directory.
 
-Take the runners from the `architect runners` line in `~/.config/shelly-stack/models.md`, in place of the `arena runners` line. If the file or that line is missing, follow the arena skill's missing-line rule. `inherit`, unavailable entries, and the spawn path follow the runner rules in the **arena** skill's Phase A and `<SHELLY_ROOT>/references/runtime.md`.
+Take the runners from the `architect runners` line in your models file (per `<SHELLY_ROOT>/references/runtime.md`), in place of the `arena runners` line. If neither file has that line, follow the arena skill's missing-line rule. `inherit`, unavailable entries, and the spawn path follow the runner rules in the **arena** skill's Phase A and `<SHELLY_ROOT>/references/runtime.md`.
 
 Design it twice. Require at least two structurally distinct candidates before synthesis, even when the first looks sufficient. One candidate is always the baseline: the smallest change that reuses the existing pattern. A bigger candidate wins only by naming what the baseline gets wrong. Pass the user's domain facts (schedules, windows, what upstream already filters) to every runner, not only the code. This is the **exhaust-the-design-space** principle (Read `../principle-exhaust-the-design-space/SKILL.md`) made concrete. Whole-shape alternatives, not point fixes inside one shape.
 

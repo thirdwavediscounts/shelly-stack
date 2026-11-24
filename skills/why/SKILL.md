@@ -7,7 +7,7 @@ description: "Use for 'why does X work this way', 'why we picked Y', design rati
 
 Investigate the motivation and intent behind code. The companion `how` skill answers what the code does and how it works. `why` answers what forces led to its shape.
 
-Each spawn below names a role line in `~/.config/shelly-stack/models.md`. Resolve it per `<SHELLY_ROOT>/references/runtime.md`. If a value is unavailable, say so and ask the user.
+Each spawn below names a role line in your models file. Resolve it per `<SHELLY_ROOT>/references/runtime.md`. If a value is unavailable, say so and ask the user.
 
 Every spawn is a helper with the delegate brief and keeps every tool, MCPs included. MCP access powers the MCP-backed investigators and the synthesizer's citation spot-checks. Investigators still shouldn't write anything. That is a posture stated in the prompt, not a sandbox.
 
