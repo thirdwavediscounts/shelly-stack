@@ -4,7 +4,7 @@ shelly-stack is Sean's fork of [pstack](https://github.com/cursor/plugins/tree/m
 
 It helps an agent write less code of higher quality. It turns one coding agent into a small engineering team that reads first, verifies its work, and reviews before it ships.
 
-This package runs on any model in any client that can read files and run a shell. That includes Claude, Codex, and Gemini through Antigravity, inside T3 Code or on their own. [`references/runtime.md`](./references/runtime.md) maps each action a skill names to the tool each client offers.
+This package runs on any model in any client that can read files and run a shell. That includes Claude, Codex, and Gemini through Antigravity, on their own or inside T3 Code or Orca. [`references/runtime.md`](./references/runtime.md) checks which app it runs in, then maps each action a skill names to that app's tools.
 
 ## Install
 
@@ -14,7 +14,7 @@ This one folder is a plugin for Claude Code, Codex, and Antigravity (Gemini). Se
 SHELLY_ROOT=/absolute/path/to/shelly-stack
 ```
 
-- Claude Code: `claude plugin marketplace add "$SHELLY_ROOT"`, then `claude plugin install shelly-stack@shelly-stack`. Or from GitHub: `/plugin install shelly-stack --marketplace thirdwavediscounts/shelly-stack`. The plugin also runs four hooks from `hooks/claude-hooks.json`: a destructive-SQL guard, its one-time approval, a status-line check, and a prompt list after compaction.
+- Claude Code: `claude plugin marketplace add "$SHELLY_ROOT"`, then `claude plugin install shelly-stack@shelly-stack`. Or from GitHub: `/plugin install shelly-stack --marketplace thirdwavediscounts/shelly-stack`. The plugin also runs four hooks from `hooks/claude-hooks.json`: a destructive-SQL guard, its one-time approval, a status-line check, and a prompt list after compaction. It ships one helper agent, [`agents/shelly-agent.md`](./agents/shelly-agent.md). The lead picks its model and effort on each spawn.
 - Codex: `codex plugin marketplace add "$SHELLY_ROOT"`, then `codex plugin add shelly-stack@shelly-stack`. Codex runs a copy in `~/.codex/plugins/cache`, so rerun `codex plugin add shelly-stack@shelly-stack` after every change. Each skill's `agents/openai.yaml` sets its Codex display name and whether Codex may start it on its own.
 - Antigravity (Gemini): the repo root is an Antigravity plugin (`plugin.json`). Link it once into the plugins folder of each config root. Standalone Antigravity reads `$HOME/.gemini/config/`. T3 Code runs Antigravity with its own root, `$HOME/.t3/userdata/providers/antigravity/<id>/config/`.
 
@@ -24,6 +24,7 @@ for root in "$HOME/.gemini/config" "$HOME"/.t3/userdata/providers/antigravity/*/
 done
 ```
 
+- Orca: install the plugin for each agent you run in Orca (Claude Code, Codex, or Gemini), as above. Orca's own skills (`orca skills install`) let shelly-stack start Orca workers.
 - Any other client: link each skill folder into its global skills folder.
 
 ```bash
