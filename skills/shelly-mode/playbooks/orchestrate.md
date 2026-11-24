@@ -2,7 +2,7 @@
 
 **You run the program, never the code. Decide which agent does each piece of work, then check what each one produces.** For a standing project handed to one coordinator chat: multi-day, many stacked PRs, dozens to hundreds of subagents, few human turns. One task driven to a predicate is Autonomous run. One ambitious run that needs a bespoke workflow is figure-it-out. Work that one agent could finish inside the session's budget is not a program.
 
-Run it with your own tools. Spawn workers per `<SHELLY_ROOT>/references/runtime.md`. Keep the program's state in one tracker file, `notes.md`, in a program folder outside the repository. Watch each PR with PR and CI event notifications when your harness has them. Call no scripts, run no polling loops, and never relay messages or status between agents.
+Run it with your own tools. Spawn workers per `<SHELLY_ROOT>/references/runtime.md`. Keep the program's state in one tracker file, `notes.md`, in a program folder outside the repository. Watch each PR with PR and CI event notifications when your harness has them. Run no polling loops, and do not relay messages or status between agents.
 
 #### Topology
 
