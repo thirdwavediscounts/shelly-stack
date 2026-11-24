@@ -69,7 +69,7 @@ Correct the log, not the story. The audit never edits or removes a row, even an 
 
 ## Cross-model review of the trail
 
-Before handing back, spawn a subagent on a different model from the one that did the work. Self-review is not a substitute. The subagent reads the audit trail and the run's transcript, then flags what the user should pay attention to. Not a redo of the work, a scan for what's suboptimal or risky. Pick its `model` per the Subagents section of the **shelly-mode** skill.
+Before handing back, spawn a read-only reviewer on the `judgment and prose` role. When a configured role runs a different model from the one that did the work, use it, because self-review is not a substitute. When every role is `inherit`, say so in Attention. The subagent reads the audit trail and the run's transcript, then flags what the user should pay attention to. Not a redo of the work, a scan for what's suboptimal or risky.
 
 - Decisions logged with weak or absent evidence.
 - Verification steps skipped or claimed without proof in the transcript.

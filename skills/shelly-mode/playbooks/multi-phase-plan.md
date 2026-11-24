@@ -5,7 +5,7 @@
 1. When the user did not ask for a plan and the change is one or two files with an obvious approach, skip the plan. Say so and stop.
 2. Settle open questions by prototype before you write. Run `playbooks/prototype.md` for each. Keep the branch, the SHA, and the screenshots for Appendix A. Ask the operator only about a product or preference call that no run can settle. Give options (`../../principle-never-block-on-the-human/SKILL.md`).
 3. Explore in helpers with the delegate brief and an explicit role per the Subagents section (`../../principle-guard-the-context-window/SKILL.md`). Pick each subagent's reasoning level for the job, per the Subagents section. Each returns file pointers, conventions, test commands, and entry points. No inlined dumps.
-4. Read `../../principle-outcome-oriented-execution/SKILL.md`, and `../../principle-migrate-callers-then-delete-legacy-apis/SKILL.md` when the plan replaces an internal API. Copy the skeleton below into the plan file and fill every placeholder. Unless the operator names a path, write the file under the agent store's `docs/`. Keep every heading and every sub-block in the order shown. Replace `<shelly-mode dir>` with the absolute shelly-mode skill folder. One section per PR. One PR is one change with its own evidence (`../../principle-sequence-verifiable-units/SKILL.md`). Name the execution playbook in **How to read this**. Pick `playbooks/autopilot-full.md` when the run may merge. Pick `playbooks/autopilot-stack.md` when the operator lands the PRs. A standing program takes `playbooks/orchestrate.md`.
+4. Read `../../principle-outcome-oriented-execution/SKILL.md`, and `../../principle-migrate-callers-then-delete-legacy-apis/SKILL.md` when the plan replaces an internal API. Copy the skeleton below into the plan file and fill every placeholder. Unless the operator names a path, write the file to a `docs/` folder outside the repository. Keep every heading and every sub-block in the order shown. Replace `<shelly-mode dir>` and `<SHELLY_ROOT>` with their absolute folders. One section per PR. One PR is one change with its own evidence (`../../principle-sequence-verifiable-units/SKILL.md`). Name the execution playbook in **How to read this**. Pick `playbooks/autopilot-full.md` when the run may merge. Pick `playbooks/autopilot-stack.md` when the operator lands the PRs. A standing program takes `playbooks/orchestrate.md`.
 5. Load the `technical-writing` skill before you write, and the `unslop` skill on the draft. The body is one Diátaxis mode, how-to. Appendices hold explanation and reference. Use no abstract metaphors. Write short declarative sentences. Each heading states the task or the finding. No long dashes. No mid-sentence colons.
 6. Run `node <shelly-mode dir>/scripts/check-plan.mjs <plan.md>`, where `<shelly-mode dir>` is this skill's base directory, and fix every line it prints (`../../principle-encode-lessons-in-structure/SKILL.md`).
 7. Hand back. Post the plan path and the script's output, then stop. Execution starts on the operator's explicit go, under the execution playbook the plan names.
@@ -23,7 +23,7 @@
 
 One box is one unit of work. Every box names the evidence that checks it. A nested box is a sub-step of the box above it. Check a box only when its evidence exists, a file, a log line, a screenshot, a test run, or a SHA. The body is a how-to. The appendices explain and record.
 
-The program runs `skills/shelly-mode/playbooks/<execution playbook>.md`. <Who merges, and which PR ids are the operator's items that stop at merge-ready.>
+The program runs `<shelly-mode dir>/playbooks/<execution playbook>.md`. <Who merges, and which PR ids are the operator's items that stop at merge-ready.>
 
 Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked.
 
@@ -57,14 +57,14 @@ Tests alone are not sufficient verification. A PR is verified only when its unit
 - [ ] Open the PR ready, never draft, with the base set to `<base-branch>` (`origin pr create --status open --base <base-branch>` on Origin, `gh pr create --base <base-branch>` on `gh`), and `draft: false`. A stack child targets its parent branch.
 - [ ] Run the repo's lint and typecheck once before the PR-facing push. Push with hooks on.
 - [ ] Run **Opening a PR** steps 1 to 5 before each push. Steps 2 and 3 load the `unslop` and `no-comments` skills.
-- [ ] Run a code review at medium effort on the PR branch. Triage every finding and every security-reviewer comment per `../references/bugbot-triage.md`.
+- [ ] Run a code review at medium effort on the PR branch. Triage every finding and every security-reviewer comment per `<shelly-mode dir>/references/bugbot-triage.md`.
 - [ ] Rebase onto current trunk before the code-ready report and babysit. Keep that merge base in fix rounds. Rebase again only at merge prep, on a `git merge-tree` conflict with trunk, on a CI failure that comes from a change on trunk, or when a known concurrent change to the same files lands.
 
 ### Verdict and merge, for every PR
 
-- [ ] A full swarm runs once, at the code-ready head. Another full swarm runs only for new behavior, a redesign, or a large new diff. A rebase, a merge-conflict resolution, or a minor fix gets a single verifier at the new head, and a wording-only change gets none. Run each full swarm per `skills/shelly-swarm/SKILL.md`. One gates lane. The ten live lanes from the PR's **Verify, live** block. The perf lane from its **Verify, perf** block. Two or more audit lanes, each with its own focus, that read the diff and the receipts and distrust the PR body. The root audits the receipts in the merge-ready report before the verdict.
-- [ ] Judge every finding by the execution playbook's blocking rule. The verdict is clean when none blocks. A failure on trunk behavior in a lane marked `Regression lane against trunk.` is recorded against trunk and does not block the PR. A new head gets a fresh verdict, except for results that stay valid under the patch-id rule in `playbooks/shipping.md`.
-- [ ] <The merge or handoff rule from the execution playbook, with the patch-id rule from `playbooks/shipping.md`.>
+- [ ] A full swarm runs once, at the code-ready head. Another full swarm runs only for new behavior, a redesign, or a large new diff. A rebase, a merge-conflict resolution, or a minor fix gets a single verifier at the new head, and a wording-only change gets none. Run each full swarm per `<shelly-mode dir>/../shelly-swarm/SKILL.md`. One gates lane. The ten live lanes from the PR's **Verify, live** block. The perf lane from its **Verify, perf** block. Two or more audit lanes, each with its own focus, that read the diff and the receipts and distrust the PR body. The root audits the receipts in the merge-ready report before the verdict.
+- [ ] Judge every finding by the execution playbook's blocking rule. The verdict is clean when none blocks. A failure on trunk behavior in a lane marked `Regression lane against trunk.` is recorded against trunk and does not block the PR. A new head gets a fresh verdict, except for results that stay valid under the patch-id rule in `<shelly-mode dir>/playbooks/shipping.md`.
+- [ ] <The merge or handoff rule from the execution playbook, with the patch-id rule from `<shelly-mode dir>/playbooks/shipping.md`.>
 
 ### Boot recipe, for every live lane
 
@@ -149,7 +149,7 @@ Each live lane runs in its own git worktree on this machine (a worktree spawn pe
 
 ## Appendix D. Links and reading list
 
-<Docs to read before editing. Which PRs get `skills/how/SKILL.md` and `skills/interrogate/SKILL.md`. The trail per `skills/show-me-your-work/SKILL.md`.>
+<Docs to read before editing. Which PRs get `<shelly-mode dir>/../how/SKILL.md` and `<shelly-mode dir>/../interrogate/SKILL.md`. The trail per `<shelly-mode dir>/../show-me-your-work/SKILL.md`.>
 ````
 
 **Reply:** the plan path, the PR ids with their dependencies and the review-gated set, what the prototypes proved and what stays unproven, and the check script's output.

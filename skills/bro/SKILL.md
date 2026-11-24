@@ -1,6 +1,6 @@
 ---
 name: bro
-description: "Use for 'explain like im 5', 'eli5', 'im confused', 'i dont get it', 'wdym', 'in plain english', 'elaborate', 'what does that mean', or 'with real numbers'. Restate the last message in plain human language, with no jargon."
+description: "Restate the last message in plain human language, with no jargon. Use when the user says they are confused or did not follow the last reply, or asks for it simpler, in plain English, like they're five (eli5), or with real numbers."
 ---
 
 Restate your last message. Stop using jargon and speak coherently. State it more simply and concisely, like one human talking to another.

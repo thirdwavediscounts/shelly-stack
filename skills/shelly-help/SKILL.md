@@ -1,6 +1,6 @@
 ---
 name: shelly-help
-description: "Help for using shelly-stack (formerly shelly-guide): setup, shelly-mode, and picking the skill, playbook, or principle for a task or stage (understand, design, build, clean, verify, ship, overnight), with a copyable prompt for the actual task. Use for \"shelly-help\", \"shelly-guide\", \"how do I use shelly-stack\", \"which skill should I use\", \"what do I run now\", \"guide me through this with shelly-stack\", or a run that went wrong."
+description: "Help for using shelly-stack: setup, shelly-mode, and picking the skill, playbook, or principle for a task or stage (understand, design, build, clean, verify, ship, overnight), with a copyable prompt for the actual task. Use when the user asks how to use shelly-stack, which skill or playbook fits what they are doing, or why a shelly-stack run went wrong, or names shelly-help or shelly-guide."
 argument-hint: "[your question, what you're trying to do, or a stage name]"
 ---
 
@@ -36,7 +36,7 @@ When the models file is missing and it matters (the user is new, the question is
 
 Source: `<SHELLY_ROOT>/README.md` and `<SHELLY_ROOT>/skills/setup-shelly-stack/SKILL.md`.
 
-1. Install by linking each skill folder into the client's skills folder. The README lists the folder for each client.
+1. Install per the README: the plugin where the README lists one for your client, or skill-folder links otherwise. Use one install per client.
 2. Ask for the `setup-shelly-stack` skill. It maps a model to each role and writes `~/.config/shelly-stack/models.md`. `inherit` means the role runs on the parent's provider and model. It is not a model name. A value can also set an option, such as the effort level.
 3. Ask for the `create-verification-skill` skill when the project has no scripted way to drive the real app.
 4. Start a real task with shelly-mode, a goal, and a check that can pass or fail.

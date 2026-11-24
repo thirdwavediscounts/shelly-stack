@@ -1,6 +1,6 @@
 ---
 name: compress-the-clock
-description: "Get a result now that would otherwise take hours or days of waiting. Force the expiry on a copy of the state, replay past instances of the event, fit the boundary inside a short run, or force time at the scheduler. Use when you are about to write or plan 'wait until', 'after <date>', 'check back', 'when the batch closes', 'the N-day loop will show', 'can only be settled by waiting', 'ready after <time>', or a follow-up to verify on a later date, and when the user asks 'can't we force a test' or 'why wait'. Not for waits on a human, a review, or a deploy you can watch finish."
+description: "Get a result now that would otherwise take hours or days of waiting. Force the expiry on a copy of the state, replay past instances of the event, fit the boundary inside a short run, or force time at the scheduler. Use when you are about to schedule, defer, or date a check that waits on an expiry, a batch, a scheduler, or a later date, or when the user asks why a check has to wait. Not for waits on a human, a review, or a deploy you can watch finish."
 ---
 
 # Compress the clock

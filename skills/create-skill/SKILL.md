@@ -41,7 +41,7 @@ Rules:
 Write for an agent that will follow it under load, per the **technical-writing** skill:
 
 - Lead with what the skill does and when. One paragraph.
-- Steps as a numbered list, each ending in a checkable state. Name the action (spawn a helper, ask the user, run a command) and the model role when a step delegates.
+- Use a numbered list where order matters or only one sequence is safe (destructive commands, auth, deploys), each step ending in a checkable state. For judgment work, state the outcome, the constraints, and how to verify. Name the action (spawn a helper, ask the user, run a command) and the model role when a step delegates.
 - Reference sibling files by relative path. Reference other skills by bold name ("the **how** skill") so the reader knows to load them, and never paste their contents. A `principle-*` skill sets `user-invocable: false` and `disable-model-invocation: true`, so the client does not list it and its skill tool refuses it. Name it by the relative path to its `SKILL.md` and say to read it, as in "Read `../principle-prove-it-works/SKILL.md`".
 - Say what the reply must contain. A skill that ends without an output contract produces a different reply every run.
 - Cut anything the agent already knows. A skill is not a manual.

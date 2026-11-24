@@ -80,13 +80,6 @@ The unit is done when:
 
 Then run **Opening a PR**.
 
-## Tips
-
-- Strip the function bodies with a script, so the whole unit's skeleton fits in context.
-- Have subagents summarize parts of the unit, so you can reason across all of it at once.
-- Script a graph of what imports what, and rerun it after each fix.
-- Start where one fix would clear the most problems.
-
 ## Example `problems.md`
 
 The list:

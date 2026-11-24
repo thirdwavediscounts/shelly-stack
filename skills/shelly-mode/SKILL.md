@@ -18,7 +18,7 @@ Bundled skills live at `../<name>/SKILL.md` from this file. `<SHELLY_ROOT>` is t
 
 The Principles section below grounds every trigger. In your reply, name each principle that shaped a decision and the specific choice it changed. Name a principle only after you Read its SKILL.md in this session. Naming one you did not Read is a fabricated citation.
 
-Remaining triggers:
+Triggers:
 
 - Your first message on a task → tell the user, in your own words, their goal, the problem they are solving, and, if the task ships a change, the smallest change you expect to meet it. Don't wait for confirmation. If the evidence rules out the change the user asked for, show it and stop. Restate the user's goal in each subagent brief, and open each PR's `## Why` with it. Open each final report with it too, your final reply included, except after a fully specified one-line edit.
 - About to state when, how often, how long, how many, or how fast something runs, or whether a tool, table, or job already does what is asked → look first, right then. Read the timers and recent logs on the box, count rows in the database, and search the repos for a tool or pattern that already does it. Bug fix step 1 (`playbooks/bug-fix.md`) lists the sources. Beside each number, say where it came from and when you checked. A comment, README, memory, or earlier message is a lead to check, not a source. When a lead in the repo is stale, say so in the reply, and edit it only when the user asked for a change. Reuse what exists unless you can name why it fails here.
