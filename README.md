@@ -37,7 +37,7 @@ Use one install per client. A plugin and skill links together register the same 
 
 ## Get started
 
-1. Ask for the [`setup-shelly-stack`](./skills/setup-shelly-stack/SKILL.md) skill. It finds your models and writes `~/.config/shelly-stack/models.md`, which picks a model and effort per role. Without it, every role runs on your current model.
+1. Ask for the [`setup-shelly-stack`](./skills/setup-shelly-stack/SKILL.md) skill. It finds your models and writes `~/.config/shelly-stack/models-<app>.md` for the app you run it in (`claude`, `t3`, `orca`, `codex`, or `antigravity`), which picks a model and effort per role. Without it, every role runs on your current model.
 2. Start any task that needs rigor with [`shelly-mode`](./skills/shelly-mode/SKILL.md). Say "use shelly-mode", then the goal and how you will know it is done.
 3. Unsure which skill fits? Ask for [`shelly-help`](./skills/shelly-help/SKILL.md).
 

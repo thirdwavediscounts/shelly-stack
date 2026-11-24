@@ -13,7 +13,7 @@ The scope is what the user names. Otherwise it is the branch diff from its merge
 
 ## Fan out
 
-Run Phase A steps 3 and 4 and Phase B of the **arena** skill, with four changes. Read the `interrogate reviewers` line in `~/.config/shelly-stack/models.md` in place of `arena runners`. Commit the scope to a local scratch branch, then spawn each adversary with worktree isolation per the read-only section of `<SHELLY_ROOT>/references/runtime.md`. In place of the arena task, rationale, and delegate brief, give each adversary the scope, the intent, and this brief:
+Run Phase A steps 3 and 4 and Phase B of the **arena** skill, with four changes. Read the `interrogate reviewers` line in your models file (per `<SHELLY_ROOT>/references/runtime.md`) in place of `arena runners`. Commit the scope to a local scratch branch, then spawn each adversary with worktree isolation per the read-only section of `<SHELLY_ROOT>/references/runtime.md`. In place of the arena task, rationale, and delegate brief, give each adversary the scope, the intent, and this brief:
 
 > Break this change. Prove each finding with a run against the real code, such as a failing test, a repro script, or command output that shows the wrong behavior. For a design or plan, run a prototype or probe the current tree. Keep repros as untracked files in your own worktree. Do not commit, edit tracked files, or run git commands that move HEAD, there or in any other checkout. Report each finding with a title, the exact command, the output it printed, and the output the intent requires. Leave out anything you did not run. That covers style, naming, structure, and risks that need a future change to matter. No findings is a valid result.
 

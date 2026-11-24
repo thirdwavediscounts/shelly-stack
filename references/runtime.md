@@ -29,8 +29,8 @@ Write the brief as: the absolute path of the brief file to read first, `<SHELLY_
 
 Skills name a role, never a model. Roles: `feature, refactoring`, `bug-fix`, `perf-issue`, `hillclimb`, `judgment and prose`, `hardest tasks`, `how explorer`, `how explainer`, `why investigators`, `why synthesizer`, `reflect tooling`, `reflect judgment, divergent, synthesizer`, `arena runners`, `arena cross-judge pool`, `swarm workers`, `architect runners`, `interrogate reviewers`, `reader`.
 
-1. Read `~/.config/shelly-stack/models.md`. Each line is `<role>: <value>`. A value is `inherit` (the parent's provider and model) or `<provider>/<model>` followed by optional `key=value` options, for example `claudeAgent/claude-opus-5-5 effort=high` or `codex/gpt-6.2-sol reasoningEffort=xhigh`. Panel roles hold a comma-separated list, and one helper runs per entry.
-2. A role with no line, or no file, uses `inherit`.
+1. Read the role's line from your app's models file, `~/.config/shelly-stack/models-<app>.md`. `<app>` is the file name "Find your app" gives your app. If that file has no line for the role, read the shared `~/.config/shelly-stack/models.md`. These two files are "your models file" in every skill. Each line is `<role>: <value>`. A value is `inherit` (the parent's provider and model) or `<provider>/<model>` followed by optional `key=value` options, for example `claudeAgent/claude-opus-5-5 effort=high` or `codex/gpt-6.2-sol reasoningEffort=xhigh`. Panel roles hold a comma-separated list, and one helper runs per entry.
+2. A role with no line in either file uses `inherit`.
 3. A value your app cannot run is unavailable. Say so and ask the user. Never switch provider or model on your own.
 4. Before a fan-out, list each stage and its role value in your reply so the user can stop it before spend.
 5. Effort: start from the role's value. Raise it one step for the hardest work, lower it for routine work. Pass it the way your app's section below says.
@@ -39,12 +39,12 @@ Skills name a role, never a model. Roles: `feature, refactoring`, `bug-fix`, `pe
 
 Check in this order. Use the first that matches, and only its section.
 
-1. **T3 Code:** you have a `delegate_task` tool.
-2. **Orca:** your shell has `ORCA_TERMINAL_HANDLE` set (`printenv ORCA_TERMINAL_HANDLE`). Orca sets it in every terminal it runs, and its worker commands need it.
-3. **Claude Code** (CLI or desktop): you have an `Agent` tool.
-4. **Codex:** you have a `spawn_agent` tool.
-5. **Antigravity (Gemini):** you have an `invoke_subagent` tool.
-6. **None of these:** do each helper step yourself, in order, and say it ran without an independent helper.
+1. **T3 Code** (file name `t3`): you have a `delegate_task` tool.
+2. **Orca** (file name `orca`): your shell has `ORCA_TERMINAL_HANDLE` set (`printenv ORCA_TERMINAL_HANDLE`). Orca sets it in every terminal it runs, and its worker commands need it.
+3. **Claude Code**, CLI or desktop (file name `claude`): you have an `Agent` tool.
+4. **Codex** (file name `codex`): you have a `spawn_agent` tool.
+5. **Antigravity**, Gemini (file name `antigravity`): you have an `invoke_subagent` tool.
+6. **None of these:** do each helper step yourself, in order, and say it ran without an independent helper. Read only the shared models file.
 
 Every app follows the shared rules after these sections.
 

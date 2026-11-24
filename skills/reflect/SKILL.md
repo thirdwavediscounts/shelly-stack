@@ -17,7 +17,7 @@ Before fanning out, run `scripts/find-transcript.sh "$PWD" "<opening words of th
 
 One turn, three async helper spawns with the delegate brief. Reviewers use MCP tools to look up the tickets, chat threads, and observability traces the transcript references. The prompt forbids file writes. The parent applies edits.
 
-Each reviewer and the synthesizer name a role line in `~/.config/shelly-stack/models.md`. Resolve it per `<SHELLY_ROOT>/references/runtime.md`. If a value is unavailable, say so and ask the user.
+Each reviewer and the synthesizer name a role line in your models file. Resolve it per `<SHELLY_ROOT>/references/runtime.md`. If a value is unavailable, say so and ask the user.
 
 A configured role value is `inherit` or a provider and model with options, per `<SHELLY_ROOT>/references/runtime.md`.
 

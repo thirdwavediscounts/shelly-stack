@@ -26,7 +26,7 @@ For a stage question, ask for the task in their own words if they haven't given 
 
 Check the state that changes the answer, and mention it only when it does:
 
-- No `~/.config/shelly-stack/models.md` means the `setup-shelly-stack` skill hasn't run for this user, so every role runs on the parent's model.
+- No `~/.config/shelly-stack/models-<app>.md` and no shared `models.md` means the `setup-shelly-stack` skill hasn't run for this app, so every role runs on the parent's model.
 - No `verify-*` skill or other app harness in the project means agents have no scripted way to drive the app. Mention the `create-verification-skill` skill when the question is about proving a change works.
 - No formal verification skill in the project means no property is checked past what tests reach. Mention the `create-formal-verification-skill` skill when the question is about a race, an invariant, or another case tests rarely hit. When one exists and the code it covers changed after the commit it records as last in sync, mention the `maintain-formal-verification-skill` skill if the question touches that code.
 
@@ -37,7 +37,7 @@ When the models file is missing and it matters (the user is new, the question is
 Source: `<SHELLY_ROOT>/README.md` and `<SHELLY_ROOT>/skills/setup-shelly-stack/SKILL.md`.
 
 1. Install per the README: the plugin where the README lists one for your client, or skill-folder links otherwise. Use one install per client.
-2. Ask for the `setup-shelly-stack` skill. It maps a model to each role and writes `~/.config/shelly-stack/models.md`. `inherit` means the role runs on the parent's provider and model. It is not a model name. A value can also set an option, such as the effort level.
+2. Ask for the `setup-shelly-stack` skill. It maps a model to each role and writes `~/.config/shelly-stack/models-<app>.md` for the app you run it in. Run it in each app whose models differ. `inherit` means the role runs on the parent's provider and model. It is not a model name. A value can also set an option, such as the effort level.
 3. Ask for the `create-verification-skill` skill when the project has no scripted way to drive the real app.
 4. Start a real task with shelly-mode, a goal, and a check that can pass or fail.
 
@@ -100,7 +100,7 @@ The Playbooks section of `<SHELLY_ROOT>/skills/shelly-mode/SKILL.md` lists every
 
 - The mode stopped applying after a few turns. Start the next task with shelly-mode again.
 - A question got treated as the next step of the last task. Say "new task".
-- A new model choice had no effect. Check that `~/.config/shelly-stack/models.md` has the line, and that the role name matches one in `<SHELLY_ROOT>/references/runtime.md` exactly.
+- A new model choice had no effect. Check that this app's `~/.config/shelly-stack/models-<app>.md`, or the shared `models.md`, has the line, and that the role name matches one in `<SHELLY_ROOT>/references/runtime.md` exactly.
 - Runs cost more than expected. See the cost paragraph in section 2.
 - Parallel agents overwrote each other. Give each agent its own worktree.
 - An overnight run moved but finished nothing. A long run needs a check that can pass or fail, not a duration.
