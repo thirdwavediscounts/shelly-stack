@@ -7,4 +7,4 @@ disable-model-invocation: true
 
 # Exhaust the Design Space
 
-It also applies to product design decisions where user experience depends on feel, not logic.
+When a UI interaction, an architecture choice, or a product decision that depends on feel has no precedent in the codebase, build 2-3 competing prototypes or sketches. Compare them side by side, then commit to one.

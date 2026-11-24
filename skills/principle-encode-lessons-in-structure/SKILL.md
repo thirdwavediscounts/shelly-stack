@@ -7,6 +7,6 @@ disable-model-invocation: true
 
 # Encode Lessons in Structure
 
-If the lesson needs judgment and cannot be encoded, state the rule once, with its reason and an example of the failure mode.
+When you catch yourself writing the same instruction a second time, encode it as a lint, metadata flag, runtime check, or script instead of more text. If the lesson needs judgment and cannot be encoded, state the rule once, with its reason and an example of the failure mode.
 
 **Corollary:** If the fix is structural, only use the structural fix. The instruction is the symptom.
