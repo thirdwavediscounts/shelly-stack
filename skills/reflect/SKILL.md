@@ -48,8 +48,8 @@ Never edit a skill in the client's installed-skill cache. Before approval, show 
 Follow each approved row's Routing exactly:
 
 - Trivial existing-skill edit (a one-line bullet, a tightened sentence, a stale fact corrected): the parent does it directly.
-- Substantive existing-skill edit (a new section, a new pattern table, more than ~10 lines): hand to the **create-skill** skill and run its draft / test / iterate loop.
-- `tune description: <skill path>` (the skill exists but didn't trigger when it should have): hand to `create-skill` and run its description-optimization loop.
+- Substantive existing-skill edit (a new section, a new pattern table, more than ~10 lines): hand to the **create-skill** skill. Write the edit by its Body rules, then run its "Check it" steps.
+- `tune description: <skill path>` (the skill exists but didn't trigger when it should have): hand to `create-skill`. Rewrite the `description` by its Frontmatter rules, with the phrase that should have triggered it, then run its "Check it" steps.
 - `new skill via create-skill: <kebab-name>`: hand creation to `create-skill`. Do not invent the shape ad hoc.
 
 If your environment ships a SKILL.md validator, run it on every touched skill before declaring done.
