@@ -36,7 +36,7 @@ When the models file is missing and it matters (the user is new, the question is
 
 Source: `<SHELLY_ROOT>/README.md` and `<SHELLY_ROOT>/skills/setup-shelly-stack/SKILL.md`.
 
-1. Install by linking each skill folder into the client's skills folder. The README lists the folder for each client.
+1. Install per the README: the plugin where the README lists one for your client, or skill-folder links otherwise. Use one install per client.
 2. Ask for the `setup-shelly-stack` skill. It maps a model to each role and writes `~/.config/shelly-stack/models.md`. `inherit` means the role runs on the parent's provider and model. It is not a model name. A value can also set an option, such as the effort level.
 3. Ask for the `create-verification-skill` skill when the project has no scripted way to drive the real app.
 4. Start a real task with shelly-mode, a goal, and a check that can pass or fail.
