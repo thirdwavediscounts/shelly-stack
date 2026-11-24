@@ -1,6 +1,6 @@
 ---
 name: shelly-help
-description: "Help for using shelly-stack (formerly shelly-guide): setup, shelly-mode, and picking the skill, playbook, or principle for a task or stage (understand, design, build, clean, verify, ship, overnight), with a copyable prompt for the actual task. Use for \"shelly-help\", \"shelly-guide\", \"how do I use shelly-stack\", \"which skill should I use\", \"what do I run now\", \"guide me through this with shelly-stack\", or a run that went wrong."
+description: "Help for using shelly-stack: setup, shelly-mode, and picking the skill, playbook, or principle for a task or stage (understand, design, build, clean, verify, ship, overnight), with a copyable prompt for the actual task. Use when the user asks how to use shelly-stack, which skill or playbook fits what they are doing, or why a shelly-stack run went wrong, or names shelly-help or shelly-guide."
 argument-hint: "[your question, what you're trying to do, or a stage name]"
 ---
 
