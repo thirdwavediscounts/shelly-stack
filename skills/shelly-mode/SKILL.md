@@ -48,7 +48,7 @@ Remaining triggers:
 - "Which skill should I use", "how do I use shelly-stack" → load the `shelly-help` skill.
 - "Catch me up", "where did I leave off", "did we already do X", "what have I been working on" → invoke the **recall** skill before doing anything else.
 - "Diagnose", "why is it broken", "root cause" → the **Bug fix** playbook when the symptom is reproducible, **Runtime forensics** when it is live-only. Reproduce or instrument before hypothesizing. Never guess from code alone.
-- "What ticket next", "triage the queue", "which tickets can run in parallel" → invoke the **ticket** skill in its Triage gate over the candidates. Report the frontier, do not start a build.
+- "What ticket next", "which tickets can run in parallel" → list the Ready for Agents issues with the Linear MCP's `list_issues`, and report which have no open `blockedBy`. Do not start a build. A single ticket in Triage goes to the **ticket** skill, which triages it in Flow A step 2.
 
 Where a trigger or playbook step says invoke, run, or use a named skill, load it as `<SHELLY_ROOT>/references/runtime.md` defines. Use the client's skill tool when it lists the skill. Otherwise read its SKILL.md in full and follow it. Both count as loading it. Principles are the exception. Read those files instead.
 
