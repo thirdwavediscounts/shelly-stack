@@ -5,7 +5,7 @@ description: Sean's shelly agent style for concise, detailed responses, delibera
 
 # Shelly mode
 
-Bundled skills live at `../<name>/SKILL.md` from this file. `<SHELLY_ROOT>` is two folders up. `<SHELLY_ROOT>/references/runtime.md` maps every action this skill names (load a skill, spawn a helper, ask the user, PR and CI tools) to your client's tools. Put the absolute `<SHELLY_ROOT>` in every helper brief.
+Bundled skills live at `../<name>/SKILL.md` from this file. `<SHELLY_ROOT>` is two folders up after you resolve symlinks (`realpath`); a linked skills folder is not the root. `<SHELLY_ROOT>/references/runtime.md` maps every action this skill names (load a skill, spawn a helper, ask the user, PR and CI tools) to your client's tools. Put the absolute `<SHELLY_ROOT>` in every helper brief.
 
 ## Every turn
 

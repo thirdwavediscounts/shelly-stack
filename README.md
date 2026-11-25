@@ -4,7 +4,7 @@ shelly-stack is Sean's fork of [pstack](https://github.com/cursor/plugins/tree/m
 
 It helps an agent write less code of higher quality. It turns one coding agent into a small engineering team that reads first, verifies its work, and reviews before it ships.
 
-This package runs on any model in any client that can read files and run a shell. That includes Claude, Codex, and Gemini through Antigravity, on their own or inside T3 Code or Orca. [`references/runtime.md`](./references/runtime.md) checks which app it runs in, then maps each action a skill names to that app's tools.
+This package runs on any model in any client that can read files and run a shell. That includes Claude, Codex, and Gemini through Antigravity, on their own or inside T3 Code, Orca, or OpenBot. [`references/runtime.md`](./references/runtime.md) checks which app it runs in, then maps each action a skill names to that app's tools.
 
 ## Install
 
