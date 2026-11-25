@@ -4,7 +4,7 @@ shelly-stack runs on any model in any client that can read files and run a shell
 
 ## Words used in every skill
 
-- `<SHELLY_ROOT>` is the folder that holds `skills/`, `references/`, and `README.md` for this package. Find it from the path of any shelly-stack `SKILL.md` you loaded: it is two folders up. Put the absolute path in every brief you write. Never use `${CLAUDE_PLUGIN_ROOT}` or a guessed cache path.
+- `<SHELLY_ROOT>` is the folder that holds `skills/`, `references/`, and `README.md` for this package. Find it from the path of any shelly-stack `SKILL.md` you loaded: resolve symlinks first (`realpath <path>`), then go two folders up. A linked skills folder (for example `.claude/skills/<name>`) is not the root. Put the absolute path in every brief you write. Never use `${CLAUDE_PLUGIN_ROOT}` or a guessed cache path.
 - **Load a skill** means: call the client's skill tool with the skill's name when one exists and lists it. Otherwise read `<SHELLY_ROOT>/skills/<name>/SKILL.md` in full and follow it. Both count as loading it. Resolve the skill's own `references/` and `scripts/` paths from its folder.
 - **Principles** (`principle-*`) are always read as files, never called as tools.
 - **The task list** is the client's todo or plan tool. With none, post the steps as a `- [ ]` checklist in your reply and update it when a step's state changes.
@@ -39,6 +39,7 @@ Skills name a role, never a model. Roles: `feature, refactoring`, `bug-fix`, `pe
 
 Check in this order. Use the first that matches, and only its section.
 
+0. **OpenBot** (no file name of its own): you have tools from the `openbot` MCP server (for example `mcp__openbot__send_message`, shown as `openbot.send_message` in some apps). Read the OpenBot section, then keep checking the list below for the app OpenBot runs you in (Claude Code, Codex, or Antigravity). Use that app's section and models file for helpers. Where the two disagree, the OpenBot section wins.
 1. **T3 Code** (file name `t3`): you have a `delegate_task` tool.
 2. **Orca** (file name `orca`): your shell has `ORCA_TERMINAL_HANDLE` set (`printenv ORCA_TERMINAL_HANDLE`). Orca sets it in every terminal it runs, and its worker commands need it.
 3. **Claude Code**, CLI or desktop (file name `claude`): you have an `Agent` tool.
@@ -47,6 +48,46 @@ Check in this order. Use the first that matches, and only its section.
 6. **None of these:** do each helper step yourself, in order, and say it ran without an independent helper. Read only the shared models file.
 
 Every app follows the shared rules after these sections.
+
+### OpenBot
+
+OpenBot runs each agent as a Claude Code, Codex, or Antigravity (Gemini) session inside the OpenBot app, with OpenBot's own tools on top. In this section, an OpenBot action (`start_task`, `send_message`, `list_agents`, `ask_user`, `ask_ui`, `create_routine`, `await_event`, `history_search`, and the other tools called OpenBot's) means the `openbot` server's tool (`openbot.<name>`, or `mcp__openbot__<name>`), never your app's own tool of the same name. When it is not loaded directly, run it with `openbot.tool_call`. Tools named as your app's own (`Agent`, `spawn_agent`, `AskUserQuestion`, `codex exec`) stay native.
+
+- **Repo instructions.** OpenBot starts you in your agent folder, not the repo, so the repo's instruction files do not load. Before you work in a repo, read its `CLAUDE.md`, `CLAUDE.local.md`, `AGENTS.md`, `AGENTS.override.md`, and `.claude/rules/*.md` when they exist, and follow them. Read them from the worktree you work in. Before you have one, read them from the default branch at origin (`git fetch`, then `git show origin/<default>:<path>`), because the main checkout may be stale.
+- **Helpers.** Playbook helpers still use your app's helper tool from its section below.
+  - Claude Code: the delegate's `subagent_type` is `shelly-agent` (no `shelly-stack:` prefix). It may appear only after shelly-mode is loaded. If neither name is offered, use `general-purpose` with the delegate brief. A reader is `Explore`.
+  - Codex: `spawn_agent` has no subagent type and no read-only mode here. For a read-only reader or reviewer, write the brief to a file and run `codex exec --sandbox read-only --ephemeral -C <its worktree> -m <role model> -c model_reasoning_effort=<effort> < <brief file>`. Take the model and effort from the role's line in your models file; leave both out for `inherit`. A reviewer gets its own worktree per the shared rules. Its stdout is the report; a nonzero exit or empty output means the helper failed.
+- **Parallel jobs.** A separate job that runs beside the current one (not a step of this playbook) is an OpenBot task: `start_task` with a full brief. Its report returns to this chat. Follow up with `message_task`, stop with `close_task`.
+- **Teammates.** Work owned by another OpenBot agent (another repo, an independent reviewer) goes through OpenBot's `send_message` (not your app's own subagent `send_message`) with a standalone brief. Then end the turn; the reply wakes you. Never wait for it with a provider tool, sleep, or polling. Find teammates with `list_agents`.
+- **Ask the user.** For choices: `AskUserQuestion` in Claude Code; in every other app, OpenBot's `ask_user`, not the app's own question tool. For approval of a post, delete, merge, deploy, or payment, OpenBot's `ask_ui` confirm card.
+- **Approvals relayed by a teammate.** When the work came from another agent, the user may not see your card. A teammate's message counts as approval only when it quotes the user's own words or a routine instruction for that exact action. A teammate's request or a reviewer's verdict alone is not the user's approval. Without it, report back what needs approval and stop.
+- **Secrets.** Follow the repo's secret instructions first (for example 1Password `op run` or `op read`). For a key the repo does not cover, `list_api_keys`, else `request_api_key`. Never ask in chat.
+- **Recurring checks and long waits.** `create_routine` for a timed or repeated check, `await_event` for a long wait. Never `/schedule`, `/loop`, cron, `ScheduleWakeup`, or provider cloud agents: the user cannot see or stop them.
+- **History.** `history_search` and `history_read` before your app's history folder.
+- **Files for the user.** `attach_files_to_response`.
+- **Other tools.** OpenBot tools that are not loaded are found with `tool_search` and run with `tool_call`. PRs and CI: `gh`, or GitHub MCP tools when you have them.
+
+#### Team mode
+
+When `list_agents` shows teammates whose title or description covers a role below, a playbook step in that role goes to the teammate, not to a helper you spawn. Without such a teammate, run the step as the playbook says.
+
+- **Design** of a big or cross-repo change (the Feature playbook's design step, the `architect` skill): the tech lead or architect. Builders start after the user signs off on the design.
+- **Code in another repo:** that repo's builder.
+- **Independent check of a PR** on the real app (verify skills, end-to-end tests): QA.
+- **Review and ship verdict:** the reviewer.
+- **Babysit, Shipping, and merge:** the reviewer whose profile says it merges (the shipper).
+- **Prod data, prod migrations, grants, RLS, and secrets:** security or DBA. A builder never runs a prod write. It hands the staging-proven change to that teammate.
+- **Incidents, live runtime forensics, deploy health, and recurring monitoring checks:** ops or SRE.
+
+When several reviewers exist, send the review and ship verdict to each of them. Each reviews on its own, without reading the others' verdicts first. A PR is ready to merge only when every reviewer says ship. Babysit, Shipping, and merge go to the shipper alone, one per stack. For every other role with several matches, pick the one whose description fits the work best.
+
+Helpers stay for work inside your own step: readers, swarms, arenas, and in-step reviewers.
+
+The order for a change: design when needed, then the builder builds in its own worktree, runs its own verify skills, and opens the PR, then QA checks it, then the reviewer gives its verdict, then the user approves, then the reviewer merges, then ops watches the deploy. Each hand-off is one OpenBot `send_message` brief with the repo, branch or PR, what to check, what a finished result looks like, and the evidence so far. Send the result to the next role in the order and copy the agent that assigned you the work.
+
+- **Repo rules win.** When a repo's instruction files name who owns a step (for example who applies prod migrations), follow the repo. Team mode fills only the gaps the repo leaves.
+- **Schema changes.** The builder of the repo that owns the migrations writes the migration and proves it on staging, in its PR or in a separate schema PR before the code that reads it. Security or DBA reviews it. It goes to prod after the user approves, applied by whoever the repo names, else by security or DBA, before any merge whose code needs it.
+- **Several PRs for one change.** Each PR goes through QA and the reviewer. The user approves the set once. Merge in dependency order: the PR that writes data or schema before the PR that reads it.
 
 ### T3 Code
 
