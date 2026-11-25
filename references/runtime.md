@@ -78,6 +78,8 @@ When `list_agents` shows teammates whose title or description covers a role belo
 - **Prod data, prod migrations, grants, RLS, and secrets:** security or DBA. A builder never runs a prod write. It hands the staging-proven change to that teammate.
 - **Incidents, live runtime forensics, deploy health, and recurring monitoring checks:** ops or SRE.
 
+When several teammates cover one role, send the step to each of them. Each reviewer reviews on its own, without reading the others' verdicts first. A PR is ready to merge only when every reviewer says ship. Only one of them merges: the one whose profile says it merges.
+
 Helpers stay for work inside your own step: readers, swarms, arenas, and in-step reviewers.
 
 The order for a change: design when needed, then the builder builds in its own worktree, runs its own verify skills, and opens the PR, then QA checks it, then the reviewer gives its verdict, then the user approves, then the reviewer merges, then ops watches the deploy. Each hand-off is one `send_message` brief with the repo, branch or PR, what to check, what a finished result looks like, and the evidence so far. Send the result to the next role in the order and copy the agent that assigned you the work.
