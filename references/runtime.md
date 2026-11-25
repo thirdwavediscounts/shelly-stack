@@ -51,7 +51,7 @@ Every app follows the shared rules after these sections.
 
 ### OpenBot
 
-OpenBot runs each agent as a Claude Code, Codex, or Antigravity (Gemini) session inside the OpenBot app, with OpenBot's own tools on top. In this section, a tool name means the `openbot` server's tool (`openbot.<name>`, or `mcp__openbot__<name>`), never your app's own tool of the same name. When it is not loaded directly, run it with `openbot.tool_call`.
+OpenBot runs each agent as a Claude Code, Codex, or Antigravity (Gemini) session inside the OpenBot app, with OpenBot's own tools on top. In this section, an OpenBot action (`start_task`, `send_message`, `list_agents`, `ask_user`, `ask_ui`, `create_routine`, `await_event`, `history_search`, and the other tools called OpenBot's) means the `openbot` server's tool (`openbot.<name>`, or `mcp__openbot__<name>`), never your app's own tool of the same name. When it is not loaded directly, run it with `openbot.tool_call`. Tools named as your app's own (`Agent`, `spawn_agent`, `AskUserQuestion`, `codex exec`) stay native.
 
 - **Repo instructions.** OpenBot starts you in your agent folder, not the repo, so the repo's instruction files do not load. Before you work in a repo, read its `CLAUDE.md`, `CLAUDE.local.md`, `AGENTS.md`, `AGENTS.override.md`, and `.claude/rules/*.md` when they exist, and follow them. Read them from the worktree you work in. Before you have one, read them from the default branch at origin (`git fetch`, then `git show origin/<default>:<path>`), because the main checkout may be stale.
 - **Helpers.** Playbook helpers still use your app's helper tool from its section below.
