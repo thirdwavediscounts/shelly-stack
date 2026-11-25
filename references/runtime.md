@@ -74,11 +74,12 @@ When `list_agents` shows teammates whose title or description covers a role belo
 - **Design** of a big or cross-repo change (the Feature playbook's design step, the `architect` skill): the tech lead or architect. Builders start after the user signs off on the design.
 - **Code in another repo:** that repo's builder.
 - **Independent check of a PR** on the real app (verify skills, end-to-end tests): QA.
-- **Review, ship verdict, Babysit, and Shipping:** the reviewer.
+- **Review and ship verdict:** the reviewer.
+- **Babysit, Shipping, and merge:** the reviewer whose profile says it merges (the shipper).
 - **Prod data, prod migrations, grants, RLS, and secrets:** security or DBA. A builder never runs a prod write. It hands the staging-proven change to that teammate.
 - **Incidents, live runtime forensics, deploy health, and recurring monitoring checks:** ops or SRE.
 
-When several teammates cover one role, send the step to each of them. Each reviewer reviews on its own, without reading the others' verdicts first. A PR is ready to merge only when every reviewer says ship. Only one of them merges: the one whose profile says it merges.
+When several reviewers exist, send the review and ship verdict to each of them. Each reviews on its own, without reading the others' verdicts first. A PR is ready to merge only when every reviewer says ship. Babysit, Shipping, and merge go to the shipper alone, one per stack. For every other role with several matches, pick the one whose description fits the work best.
 
 Helpers stay for work inside your own step: readers, swarms, arenas, and in-step reviewers.
 
