@@ -2,7 +2,7 @@
 
 Invoked at the end of every other playbook, and before every `git push` of a PR branch, even outside a playbook. Commit freely while building. Before the first push, run steps 1 to 3 on the full branch diff and commit their fixes. Later pushes to the same PR skip them. Before asking to merge, run step 3 again on the full branch diff. Put steps 1 to 8 in the task list when you reach this playbook.
 
-1. Read `../../principle-laziness-protocol/SKILL.md` and `../../principle-minimize-reader-load/SKILL.md`. Then cut AI slop from the scoped code diff yourself: extra comments, defensive checks abnormal for trusted paths, casts to `any`, deep nesting an early return removes, and anything else out of style with the file. Keep behavior unchanged.
+1. Read `../../principle-laziness-protocol/SKILL.md` and `../../principle-minimize-reader-load/SKILL.md`. Keep the smallest change that solves the problem, with fewer layers and less hidden state for the reader. Then cut AI slop from the scoped code diff yourself: extra comments, defensive checks abnormal for trusted paths, casts to `any`, deep nesting an early return removes, and anything else out of style with the file. Keep behavior unchanged.
 2. Load the `unslop` skill on the diff's prose and comments.
 3. Load the `no-comments` skill on the diff.
 4. Spawn a read-only reviewer helper given `<SHELLY_ROOT>/references/maintainability-reviewer.md` on the diff. Skip it only when the diff changes no code file (docs or config only), and mark it `skip: no code files`. Fix or dismiss each finding with a reason.
